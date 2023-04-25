@@ -1,7 +1,5 @@
-import React from 'react';
-
-export default class FakeStackOverflow extends React.Component {
-  render() {
-    return (<h1> Change Me </h1>)
-  }
+export default function fakeStackOverflow() {
+  return (
+    <h1> Replace with relevant content </h1>
+  );
 }
