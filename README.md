@@ -1,4 +1,4 @@
-Login with your Northeastern credentials and read the Project Specfications [here](https://northeastern-my.sharepoint.com/:w:/g/personal/j_mitra_northeastern_edu/EcUflH7GXMBEjXGjx-qRQMkB7cfHNaHk9LYqeHRm7tgrKg?e=oZEef3).
+Login with your Northeastern credentials and read the Project Specifications [here](https://northeastern-my.sharepoint.com/:w:/g/personal/j_mitra_northeastern_edu/EcUflH7GXMBEjXGjx-qRQMkB7cfHNaHk9LYqeHRm7tgrKg?e=oZEef3).
 
 Add design docs in *images/*
 
@@ -20,3 +20,11 @@ Detailed instructions with all relevant commands go here.
 |                 | Test-2         |
 | Login           | Test-1         |
 |                 | Test-2         |
+
+## Design Patterns Used
+
+- Design Pattern Name:
+
+- Problem Solved:
+
+- Location in code where pattern is used:
