@@ -1,0 +1,12 @@
+.tag_button {
+    color: #ffffff;
+    background: gray;
+    border-width: 0;
+    border-radius: 8px;
+    margin-left: 10px;
+    padding: 8px 20px 8px 20px;
+}
+
+.tag_button:first-of-type {
+    margin-left: 0;
+}

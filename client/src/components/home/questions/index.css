@@ -1,0 +1,10 @@
+.btns {
+    margin-right: 15%;
+}
+
+.question_list {
+    height: 95%;
+    overflow: auto;
+    border-top: #000000 1px dashed;
+    border-bottom: #000000 1px dashed;
+}

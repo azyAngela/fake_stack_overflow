@@ -1,1 +1,42 @@
 /* Add your CSS here */
+.margin_left_20 {
+    margin-left: 20px;
+}
+
+.margin_top_50 {
+    margin-top: 50px;
+}
+
+.margin_bottom_50 {
+    margin-bottom: 50px;
+}
+
+.text_align_center {
+    text-align: center;
+}
+
+.btn_indicator_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* This will push child elements to the extremes of the container */
+    width: 100%;
+}
+
+.blue_btn {
+    background: #3090e2;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.mandatory_indicator {
+    font-size: 0.8rem;
+    color: red;
+    margin-top: 10px;
+}
+
+.gray_btn {
+    color: gray;
+}

@@ -1,15 +1,16 @@
 // ************** THIS IS YOUR APP'S ENTRY POINT. CHANGE THIS FILE AS NEEDED. **************
 // ************** DEFINE YOUR REACT COMPONENTS in ./components directory **************
-import './stylesheets/App.css';
-import FakeStackOverflow from './components/fakestackoverflow.js';
-import React from 'react';
+import React from "react";
+import "./stylesheets/App.css";
+import FakeStackOverflow from "./components/fakestackoverflow.js";
+import { UserProvider } from "./context/user.js";
 
 function App() {
-  return (
-    <section className="fakeso">
-      <FakeStackOverflow />
-    </section>
-  );
+    return (
+        <UserProvider>
+            <FakeStackOverflow />
+        </UserProvider>
+    );
 }
 
 export default App;

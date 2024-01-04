@@ -1,0 +1,12 @@
+.answer_question_meta {
+    color: #bbbbbb;
+}
+
+.ansButton {
+    margin: 10px 0 10px 10px;
+}
+
+.ans_list {
+    height: 40%;
+    overflow: auto;
+}
