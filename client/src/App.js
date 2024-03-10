@@ -3,13 +3,10 @@
 import React from "react";
 import "./stylesheets/App.css";
 import FakeStackOverflow from "./components/fakestackoverflow.js";
-import { UserProvider } from "./context/user.js";
 
 function App() {
     return (
-        <UserProvider>
-            <FakeStackOverflow />
-        </UserProvider>
+        <FakeStackOverflow />
     );
 }
 

@@ -1,3 +1,4 @@
+// run this file to remove the fake_so database
 const mongoose = require('mongoose');
 
 async function dropDatabase() {
