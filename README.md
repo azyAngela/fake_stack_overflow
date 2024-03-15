@@ -4,6 +4,10 @@ Login with your Northeastern credentials and read the project description [here]
 
 ## List of features
 
+For each feature give a name and a one line description.
+
+Clearly indicate which feature is an additional feature for extra credit.
+
 - Feature 1: This is feature 1
 
 ## For each feature indicate the test
@@ -13,3 +17,7 @@ Login with your Northeastern credentials and read the project description [here]
 ## For each server endpoint indicate the test
 
 - Endpoint 1: /path/to/server/tests/test-file
+
+## Instructions to generate and view coverage report 
+
+This counts for extra credit. Ignore if you haven't implemented it.
