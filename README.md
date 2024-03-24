@@ -6,18 +6,10 @@ Login with your Northeastern credentials and read the project description [here]
 
 All the features you have implemented. 
 
-1. Feature 1:
-    a. Desc: This is feature 1.
-    b. e2e tests: /path/to/test
-    c. component tests: path/to/test
-    d. jest tests: path/to/test
-
-2. Feature 2:
-    This is feature 2.
-    e2e tests: /path/to/test
-    component tests: path/to/test
-    jest tests: path/to/test
-
+| Feature   | Description     | E2E Tests      | Component Tests | Jest Tests     |
+|-----------|-----------------|----------------|-----------------|----------------|
+| Feature 1 | This is feature 1. | /path/to/test | path/to/test    | path/to/test   |
+| Feature 2 | This is feature 2. | /path/to/test | path/to/test    | path/to/test   |
 . . .
 
 ## Instructions to generate and view coverage report 
