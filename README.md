@@ -1,23 +1,25 @@
-# Final Project CS5610
+# Final Team Project for CS5500
 
-Login with your Northeastern credentials and read the project description [here](https://northeastern-my.sharepoint.com/:w:/g/personal/j_mitra_northeastern_edu/EVgJQzqalH9LlZQtMVDxz5kB7eZv2nBwIKFDFYxDMzgohg?e=EPjgIF).
+Login with your Northeastern credentials and read the project description [here](https://northeastern-my.sharepoint.com/:w:/g/personal/j_mitra_northeastern_edu/ETUqq9jqZolOr0U4v-gexHkBbCTAoYgTx7cUc34ds2wrTA?e=URQpeI).
 
 ## List of features
 
-For each feature give a name and a one line description.
+All the features you have implemented. 
 
-Clearly indicate which feature is an additional feature for extra credit.
+1. Feature 1:
+    This is feature 1.
+    e2e tests: /path/to/test
+    component tests: path/to/test
+    jest tests: path/to/test
 
-- Feature 1: This is feature 1
+2. Feature 2:
+    This is feature 2.
+    e2e tests: /path/to/test
+    component tests: path/to/test
+    jest tests: path/to/test
 
-## For each feature indicate the test
-
-- Feature 1: /path/to/cypress/test
-
-## For each server endpoint indicate the test
-
-- Endpoint 1: /path/to/server/tests/test-file
+. . .
 
 ## Instructions to generate and view coverage report 
 
-This counts for extra credit. Ignore if you haven't implemented it.
+## Extra Credit Section (if applicable)
