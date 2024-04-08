@@ -15,6 +15,7 @@ jobs:
         node-version: '21'
     - name: Install dependencies
       run: npm install
+      working-directory: ./server
     - name: Run Jest tests
       run: npm test
       env:
@@ -22,13 +23,6 @@ jobs:
 
   cypress-tests:
     runs-on: ubuntu-latest
-    services:
-      # If your tests interact with a database or other services, you can set them up here
-      # Example for setting up a dummy server:
-      # dummy-server:
-      #   image: nginx
-      #   ports:
-      #     - 80:80
     steps:
     - uses: actions/checkout@v2
     - name: Set up Node.js
@@ -37,6 +31,7 @@ jobs:
         node-version: '21'
     - name: Install dependencies
       run: npm install
+      working-directory: ./client
     - name: Install Cypress
       run: npm install cypress
     - name: Run Cypress tests
