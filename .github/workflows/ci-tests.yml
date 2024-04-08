@@ -1,4 +1,4 @@
-name: Continuous Integration Tests
+name: Continuous Integration Test
 
 on:
   pull_request:
