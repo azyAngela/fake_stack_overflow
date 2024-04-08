@@ -1,0 +1,46 @@
+name: Continuous Integration Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  jest-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '21'
+    - name: Install dependencies
+      run: npm install
+    - name: Run Jest tests
+      run: npm test
+      env:
+        CI: true
+
+  cypress-tests:
+    runs-on: ubuntu-latest
+    services:
+      # If your tests interact with a database or other services, you can set them up here
+      # Example for setting up a dummy server:
+      # dummy-server:
+      #   image: nginx
+      #   ports:
+      #     - 80:80
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '21'
+    - name: Install dependencies
+      run: npm install
+    - name: Install Cypress
+      run: npm install cypress
+    - name: Run Cypress tests
+      run: npx cypress run
+      env:
+        CI: true
+
