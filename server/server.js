@@ -10,7 +10,7 @@ mongoose.connect(MONGO_URL);
 const app = express();
 
 app.get("/", (_, res) => {
-    res.send("Fake SO Server Dummy Endpoint!!!");
+    res.send("Fake SO Server Dummy Endpoint!!!!");
     res.end();
 });
 
