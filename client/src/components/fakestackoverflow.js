@@ -1,9 +1,12 @@
 import React from "react";
+import Header from "./header";
+import Main from "./main";
 
 export default function fakeStackOverflow() {
     return (
-        <div>
-            Implement Fake Stack Overflow
-        </div>
+        <>
+            <Header />
+            <Main/>
+        </>
     );
 }
