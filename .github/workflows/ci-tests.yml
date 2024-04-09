@@ -6,7 +6,7 @@ on:
 
 jobs:
   jest-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Set up Node.js
@@ -18,11 +18,12 @@ jobs:
       working-directory: ./server
     - name: Run Jest tests
       run: npm test
+      working-directory: ./server
       env:
         CI: true
 
   cypress-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Set up Node.js
@@ -34,7 +35,9 @@ jobs:
       working-directory: ./client
     - name: Install Cypress
       run: npm install cypress
+      working-directory: ./client
     - name: Run Cypress tests
       run: npx cypress run
+      working-directory: ./client
       env:
         CI: true
