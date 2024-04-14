@@ -5,11 +5,10 @@ import SignUp from './signUp';
 import PostList from './question';
 import ProfilePage from './profile';
 import NewQuestion from './newQuestion';
-import store from '../../store';
-import { Provider } from 'react-redux';
+// import store from '../store';
+// import { Provider } from 'react-redux';
 const Main = () => {
   return (
-    <Provider store={store}>
     <div id="main" className="main">
       <div id="right_main" className="right_main">
         <Routes>
@@ -21,7 +20,6 @@ const Main = () => {
         </Routes>
       </div>
     </div>
-    </Provider>
   );
 };
 

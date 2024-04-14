@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const CreatePost = ({addNewPost}) => {
+const CreatePost = () => {
   const [formData, setFormData] = useState({
     title: '',
     text: '',
@@ -18,7 +18,7 @@ const CreatePost = ({addNewPost}) => {
     e.preventDefault();
     // Handle form submission here, for example, send data to backend
     console.log(formData);
-    addNewPost(formData);
+    // addNewPost(formData);
     // Reset form fields
     setFormData({
       title: '',
