@@ -1,10 +1,22 @@
 import { useState } from "react";
 import "./index.css";
-const Header = ({search, setMainPage }) => {
+import { useNavigate } from 'react-router-dom';
+
+const Header = ({search}) => {
     const [val, setVal] = useState(search);
+    const navigate = useNavigate();
+
+    const jumpLogin = () => { navigate('/login'); }
+    const jumpSignUp = () => { navigate('/signup'); }   
+
     return (
         <div id="header" className="header">
-            <div className="title">Fake Stack Overflow</div>
+            <div className="title" onClick={
+                () => {
+                    navigate('/');
+                }
+            
+            }>Fake Stack Overflow</div>
             <input
                 id="searchBar"
                 placeholder="Search ..."
@@ -13,22 +25,21 @@ const Header = ({search, setMainPage }) => {
                 onChange={(e) => {
                     setVal(e.target.value);
                 }}
-
             />
-            <button
-                id="loginButton"
-                onClick={() => {
-                    setMainPage(val, "login");
-                }}>
-                Login
-            </button>
-            <button
-                id="signUpButton"
-                onClick={() => {
-                    setMainPage(val, "signup");
-                }}>
-                Sign Up
-            </button>
+            <div className="button-group">
+                <button
+                    id="loginButton"
+                    className="btn"
+                    onClick={jumpLogin}>
+                    Login
+                </button>
+                <button
+                    id="signUpButton"
+                    className="btn"
+                    onClick={jumpSignUp}>
+                    Sign Up
+                </button>
+            </div>
         </div>
     );
 };
