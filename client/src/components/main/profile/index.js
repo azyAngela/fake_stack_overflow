@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-
+import axios from 'axios';
+import { useUser } from '../../../utlis/userprovider';
+import { useNavigate } from 'react-router';
 const ProfilePage = () => {
     // Dummy data for badges and activity
     const dummyBadges = ['Gold', 'Silver', 'Bronze'];
@@ -9,12 +11,29 @@ const ProfilePage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [username, setUsername] = useState('JohnDoe');
     const [aboutMe, setAboutMe] = useState('');
-
+    const { csrfToken, setUser } = useUser();
+    const navigate = useNavigate();
     // Function to handle save changes
     const handleSaveChanges = () => {
         // Save changes to backend or update state as needed
         setIsEditing(false);
     };
+
+    const handleLogout = async () => {
+        try {
+          await axios.post('http://localhost:8000/profile/logout', null, {
+            headers: {
+              'X-CSRF-Token': csrfToken,
+            },
+            withCredentials: true,
+          });
+    
+          setUser("");
+            navigate('/');
+        } catch (error) {
+          console.error('Error logging out:', error);
+        }
+      };
 
     return (
         <div className="container mt-5">
@@ -101,6 +120,9 @@ const ProfilePage = () => {
                         ))}
                     </ul>
                 </div>
+            </div>
+            <div className='mb-3'>
+                <button className='btn btn-danger' onClick ={handleLogout}>Logout</button>
             </div>
         </div>
     );

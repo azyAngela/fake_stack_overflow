@@ -1,5 +1,6 @@
 const express = require("express");
-const { addTag, getQuestionsByOrder, filterQuestionsBySearch } = require('../utils/question');
+const { addTag } = require('../utils/question');
+const Question = require("../models/questions");
 const router = express.Router();
 router.use(express.json());
 
@@ -7,10 +8,9 @@ router.use(express.json());
 // add appropriate HTTP verbs and their endpoints to the router.
 
 router.get("/getQuestion", async (req, res) => {
-    const { order, search } = req.query;
     try {
-        const questions = await getQuestionsByOrder(order);
-        res.status(200).json(filterQuestionsBySearch(questions, search));
+        const questions = await Question.find().populate("answers");
+        res.status(200).json(questions);
     } catch (error) {
         console.error("Failed to get questions:", error);
         res.status(500).json({ message: "Failed to get questions due to server error." });

@@ -1,8 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 // import CreatePost from '../newQuestion';
 
+
+
+
+
+
 const PostList = () => {
+  useEffect(() => {
+    const fetchQuestion = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/question/getquestion');
+        console.log('Question:', response.data);
+      } catch (error) {
+        console.error('Error fetching question:', error);
+      }
+    };
+  
+    fetchQuestion();
+  }, []); 
+
+
   const [allPosts, setAllPosts] = useState([
     // Dummy posts data
     {
