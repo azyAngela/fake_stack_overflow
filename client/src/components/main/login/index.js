@@ -1,93 +1,59 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState , useCallback, useEffect} from 'react';
 import axios from 'axios';
-
+import { useUser } from '../../../utlis/userprovider';
+import { useNavigate } from 'react-router-dom';
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState("");
-  const [csrfToken, setCsrfToken] = useState('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const { csrfToken, setUser, setCsrfToken} = useUser();
+  const jumpMain = () => { navigate('/'); }
 
-  const fetchCsrfToken = useCallback(async () => {
-    try {
-      const response = await axios.get('http://localhost:8001/csrf-token', { withCredentials: true });
-      setCsrfToken(response.data.csrfToken);
-    } catch (error) {
-      console.error('Error fetching CSRF token:', error);
-    }
+  const fetchCsrfToken = useCallback(async () =>
+  {
+   try {
+     const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
+     setCsrfToken(response.data.csrfToken);
+   } catch (error) {
+     console.error('Error fetching CSRF token:', error);
+   }
   }, []);
-
-  const checkLoginStatus = useCallback(async () => {
-    try {
-      const response = await axios.get('http://localhost:8001/check-login', {
-        headers: {
-          'X-CSRF-Token': csrfToken,
-        },
-        withCredentials: true,
-      });
-      const resLoggedIn = response.data.loggedIn;
-      setLoggedIn(resLoggedIn);
-      if (resLoggedIn)
-        setUser(response.data.user.username);
-    } catch (error) {
-      console.error('Error checking login status:', error);
-    }
-  }, [csrfToken]);
-
   useEffect(() => {
-    const fetchCsrfAndCheckLoginStatus = async () => {
-      await fetchCsrfToken();
-      await checkLoginStatus();
-    };
-
-    // Call the function only when the component mounts
-    if (!csrfToken) {
-      fetchCsrfAndCheckLoginStatus();
-    }
-  }, [csrfToken, fetchCsrfToken, checkLoginStatus]);
-
+    const fetchCsrf = async () => {
+        await fetchCsrfToken();
+      };
+    fetchCsrf()
+  }, [fetchCsrfToken]);
 
   const handleLogin = async () => {
     // Make sure to include the CSRF token in the headers
     try {
-      const response = await axios.post('http://localhost:8001/login', { username, password }, {
+      const response = await axios.post('http://localhost:8000/profile/login', { username, password }, {
         headers: {
-          'X-CSRF-Token': csrfToken,
+            'X-CSRF-Token': csrfToken,
         },
         withCredentials: true,
-      });
+    });
+      setUser(response.data.user);
+        setUsername('');
+        setPassword('');
 
-      setLoggedIn(response.data.success);
-      setUser(response.data.user.username);
+        setMessage('User loggedin successfully, redirecting to main page...');
+        setTimeout(() => {
+            jumpMain();
+        }, 2000);
     } catch (error) {
       console.error('Error logging in:', error);
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await axios.post('http://localhost:8001/logout', null, {
-        headers: {
-          'X-CSRF-Token': csrfToken,
-        },
-        withCredentials: true,
-      });
+  
 
-      setLoggedIn(false);
-      setUser("");
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
 
   return (
     <div className="container mt-5">
-      {loggedIn ? (
-        <div>
-          <p className="mb-3">Welcome, {user}!</p>
-          <button className="btn btn-primary" onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
+       
         <div>
           <div className="mb-3">
             <label htmlFor="username" className="form-label">Username: </label>
@@ -99,7 +65,8 @@ function Login() {
           </div>
           <button className="btn btn-primary" onClick={handleLogin}>Login</button>
         </div>
-      )}
+        
+        {message && <div className="mt-3 text-primary">{message}</div>}
     </div>
   );
 }

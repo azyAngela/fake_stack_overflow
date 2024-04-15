@@ -8,15 +8,16 @@ router.get('/csrf-token', (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
   });
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
     const { username, password } = req.body;
   
     // Mock authentication
-    const user = Profile.find(u => u.username === username && u.password === password).populate('questions').populate('answers');
-  
+    const user = await Profile.findOne({ username: username, password: password })
+    .populate('questions')
+    .populate('answers')
     if (user) {
-      req.session.user = user;
-      res.json({ success: true, user });
+      req.session.user = user.toObject();
+      res.status(200).json({ isloggedin: true, user });
     } else {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
     }

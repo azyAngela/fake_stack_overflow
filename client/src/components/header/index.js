@@ -1,14 +1,15 @@
 import { useState } from "react";
 import "./index.css";
 import { useNavigate } from 'react-router-dom';
-
+import { useUser } from "../../utlis/userprovider";
 const Header = ({search}) => {
     const [val, setVal] = useState(search);
     const navigate = useNavigate();
 
     const jumpLogin = () => { navigate('/login'); }
+    const jumpProfile = () => { navigate('/profile'); }
     const jumpSignUp = () => { navigate('/signup'); }   
-
+    const {  user } = useUser();
     return (
         <div id="header" className="header">
             <div className="title" onClick={
@@ -26,7 +27,7 @@ const Header = ({search}) => {
                     setVal(e.target.value);
                 }}
             />
-            <div className="button-group">
+            {!user && <div className="button-group">
                 <button
                     id="loginButton"
                     className="btn"
@@ -39,7 +40,14 @@ const Header = ({search}) => {
                     onClick={jumpSignUp}>
                     Sign Up
                 </button>
-            </div>
+            </div>}
+            {user && <div className="button-group"> <button
+                    id="loginButton"
+                    className="btn"
+                    onClick={jumpProfile}>
+                    {user.username}
+                </button></div>}
+            
         </div>
     );
 };
