@@ -5,21 +5,23 @@ import SignUp from './signUp';
 import PostList from './question';
 import ProfilePage from './profile';
 import NewQuestion from './newQuestion';
-// import store from '../store';
-// import { Provider } from 'react-redux';
+import Answer from './answer';
+
+
 const Main = () => {
   return (
-    <div id="main" className="main">
-      <div id="right_main" className="right_main">
-        <Routes>
-          <Route path="/" element={<PostList />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/newquestion" element={<NewQuestion />} />
-        </Routes>
+      <div id="main" className="main">
+        <div id="right_main" className="right_main">
+          <Routes>
+            <Route path="/" element={<PostList />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/newquestion" element={<NewQuestion />} />
+            <Route path="/posts/:id" element={<Answer />} />
+          </Routes>
+        </div>
       </div>
-    </div>
   );
 };
 

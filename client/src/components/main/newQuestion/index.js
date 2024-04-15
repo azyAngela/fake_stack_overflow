@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addPost } from './newQuestionReducer'
 
-const CreatePost = () => {
+function CreatePost() {
   const [formData, setFormData] = useState({
     title: '',
     text: '',
@@ -14,12 +17,27 @@ const CreatePost = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleAddPost = (newPost) => {
+    dispatch(addPost(newPost));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here, for example, send data to backend
     console.log(formData);
-    // addNewPost(formData);
-    // Reset form fields
+    const newPost = {
+        id: Date.now(), // You can generate a unique ID for the new post
+        title: formData.title,
+        overview: formData.text,
+        author: formData.username,
+        postDate: new Date().toISOString(),
+        tags: formData.tags.split(' '), // Split the tags string into an array
+        votes: 0
+      };
+    handleAddPost(newPost);
     setFormData({
       title: '',
       text: '',
@@ -27,6 +45,7 @@ const CreatePost = () => {
       tags: '',
       username: ''
     });
+    navigate('/');
   };
 
   return (

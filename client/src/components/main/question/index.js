@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-// import CreatePost from '../newQuestion';
+// import { UseDispatch } from 'react-redux';
+// import { addPost } from '../newQuestion/newQuestionReducer';
 
-const PostList = () => {
+function PostList() {
   const [allPosts, setAllPosts] = useState([
     // Dummy posts data
     {
@@ -24,6 +25,12 @@ const PostList = () => {
       votes: 0
     },
   ]);
+
+
+  // const addNewPost = (newPost) => {
+  //   // Add the new post to the list of posts
+  //   setAllPosts([...allPosts, newPost]);
+  // };
 
   const handleVote = (postId, voteType) => {
     const updatedPosts = allPosts.map(post => {
@@ -48,9 +55,9 @@ const PostList = () => {
         <div className="col-md-6">
           <h2 className="mb-0">All Posts</h2>
         </div>
-        {/* <CreatePost addNewPost={addNewPost} /> */}
+       
         <div className="col-md-6 d-flex justify-content-end">
-          <Link to="/newquestion" className="btn btn-primary">Create New Post</Link>
+          <Link to="/newquestion" className="btn btn-primary" >Create New Post</Link>
         </div>
       </div>
       {allPosts.map(post => (
