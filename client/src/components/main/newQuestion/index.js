@@ -1,33 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from "../../../utlis/userprovider";
 
 const CreatePost = () => {
   const [formData, setFormData] = useState({
     title: '',
     text: '',
-    details: '',
-    tags: '',
-    username: ''
+    tags: ''
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const { user } = useUser();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here, for example, send data to backend
-    console.log(formData);
-    // addNewPost(formData);
-    // Reset form fields
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const [csrfToken, setCsrfToken] = useState('');
+
+  const fetchCsrfToken = useCallback(async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
+      setCsrfToken(response.data.csrfToken);
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchCsrf = async () => {
+      await fetchCsrfToken();
+    };
+    fetchCsrf();
+  }, [fetchCsrfToken]);
+
+  const handleChange = (e) => {
     setFormData({
-      title: '',
-      text: '',
-      details: '',
-      tags: '',
-      username: ''
+      ...formData,
+      [e.target.name]: e.target.value
     });
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Generate current date/time
+      const currentDate = new Date().toISOString();
+
+      const data = {
+        title: formData.title,
+        text: formData.text,
+        tags: formData.tags.split(" ").filter((tag) => tag.trim() !== ""),
+        asked_by: user.username,
+        ask_date_time: currentDate
+      };
+      console.log(formData.tags);
+
+      const response = await axios.post('http://localhost:8000/question/addQuestion', data, {
+        headers: {
+          'X-CSRF-Token': csrfToken
+        },
+        withCredentials: true,
+      });
+
+      console.log(response.data);
+      console.log(data); // Logging the data being sent to the server
+      // Clear the form fields
+      setFormData({
+        title: '',
+        text: '',
+        tags: ''
+      });
+      navigate('/');
+    } catch (error) {
+      setError('Failed to add question');
+      console.error('Failed to add question:', error);
+    }
+  };
+
 
   return (
     <div className="container mt-5">
@@ -59,16 +108,6 @@ const CreatePost = () => {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="details" className="form-label">Add details</label>
-          <textarea
-            className="form-control"
-            id="details"
-            name="details"
-            value={formData.details}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3">
           <label htmlFor="tags" className="form-label">Tags*</label>
           <input
             type="text"
@@ -81,20 +120,9 @@ const CreatePost = () => {
           />
           <small className="form-text text-muted">Add keywords separated by whitespace</small>
         </div>
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">Username*</label>
-          <input
-            type="text"
-            className="form-control"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-          />
-        </div>
         <button type="submit" className="btn btn-primary">Submit</button>
       </form>
+      {error && <div className="mt-3 text-danger">{error}</div>}
     </div>
   );
 };
