@@ -15,11 +15,8 @@ router.post("/addAnswer", async (req, res) => {
             ans_by: ans.ans_by == null ? null : ans.ans_by,
             ans_date_time: new Date()});
         let savedAnswer = null;
-        if(ans.ans_by == null){
-            savedAnswer = await Answer.create({text: "This is a test answer"});
-        }else{
-            savedAnswer = await Answer.create(newAnswer);
-        }
+
+        savedAnswer = await Answer.create(newAnswer);
 
         // Send back the saved answer
         await Question.findOneAndUpdate(
