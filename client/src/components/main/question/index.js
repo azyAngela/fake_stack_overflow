@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { getMetaData } from '../../../utlis/dateFormat';
 
 const PostList = () => {
   const [allPosts, setAllPosts] = useState([]);
@@ -89,7 +90,7 @@ const PostList = () => {
                 <button className="btn btn-outline-danger btn-sm" onClick={() => handleVote(post._id, 'downvote')}>Downvote</button>
               </div>
               <div className="col-md-6">
-                <Link to={`/posts/${post.id}`} className="text-decoration-none text-dark">
+                <Link to={`/posts/${post._id}`} className="text-decoration-none text-dark">
                   <h3 className="card-title">{post.title}</h3>
                 </Link>
                 <p className="card-text">{post.text}</p>
@@ -101,8 +102,8 @@ const PostList = () => {
               </div>
               <div className="col-md-3">
                 <div>
-                  <div>{`Author: ${post.asked_by}`}</div>
-                  <div>{`Posted on: ${post.ask_date_time}`}</div>
+                  <div>{`asked by: ${post.asked_by}`}</div>
+                  <div>{`asked ${getMetaData(new Date(post.ask_date_time))}`}</div>
                 </div>
               </div>
             </div>
