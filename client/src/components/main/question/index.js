@@ -5,10 +5,9 @@ import { getMetaData } from '../../../utlis/dateFormat';
 
 const PostList = () => {
   const [allPosts, setAllPosts] = useState([]);
-
   const [error, setError] = useState('');
-
   const [csrfToken, setCsrfToken] = useState('');
+  const [votedPosts, setVotedPosts] = useState({});
 
   const fetchCsrfToken = useCallback(async () => {
     try {
@@ -36,39 +35,54 @@ const PostList = () => {
         console.error('Error fetching question:', error);
       }
     };
-  
+
     fetchQuestion();
-  }, []); 
-  
+  }, []);
+
   const handleVote = async (postId, voteType) => {
     try {
       // Determine the correct endpoint based on the vote type
       const endpoint = voteType === 'upvote' ? `/upvoteQuestion/${postId}` : `/downvoteQuestion/${postId}`;
-      
+
+      // Check if the user has already voted on this post
+      if (votedPosts[postId] === voteType) {
+        console.log(`Already ${voteType} voted for this post`);
+        return; // Exit the function if the user has already voted
+      }
+
       // Make a PUT request to the backend endpoint
-      const response = await axios.put(`http://localhost:8000/question/${endpoint}`, null, {
+      await axios.put(`http://localhost:8000/question/${endpoint}`, null, {
         headers: {
           'X-CSRF-Token': csrfToken
         },
         withCredentials: true,
       });
-  
+
       // Update the local state with the updated post data
       setAllPosts(allPosts.map(post => {
         if (post._id === postId) {
+          // If the user previously upvoted this post, decrement the upvotes
+          // If the user previously downvoted this post, increment the upvotes
+          const newUpvotes = post.upvotes + (voteType === 'upvote' ? 1 : -1);
           return {
             ...post,
-            upvotes: response.data.upvotes // Assuming the backend returns the updated upvotes count
+            upvotes: newUpvotes
           };
         }
         return post;
+      }));
+
+      // Update the votedPosts state to mark that the user has voted on this post
+      setVotedPosts(prevVotedPosts => ({
+        ...prevVotedPosts,
+        [postId]: voteType
       }));
     } catch (error) {
       console.error('Failed to vote:', error);
       setError('Failed to vote');
     }
   };
-  
+
 
   return (
     <div className="container mt-5">

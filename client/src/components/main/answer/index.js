@@ -6,10 +6,10 @@ import { getMetaData } from '../../../utlis/dateFormat';
 function PostDetail() {
   const [post, setPost] = useState(null);
   const qid = useParams().id;
-
   const [error, setError] = useState('');
-
   const [csrfToken, setCsrfToken] = useState('');
+  const [votedPosts, setVotedPosts] = useState({});
+  const [votedAnswers, setVotedAnswers] = useState({});
 
   const fetchCsrfToken = useCallback(async () => {
     try {
@@ -44,6 +44,11 @@ function PostDetail() {
   const handlePostVote = async (qid, voteType) => {
     try {
       const endpoint = voteType === 'upvote' ? `/upvoteQuestion/${qid}` : `/downvoteQuestion/${qid}`;
+      // Check if the user has already voted on this post
+      if (votedPosts[qid] === voteType) {
+        console.log(`Already ${voteType} voted for this post`);
+        return; // Exit the function if the user has already voted
+      }
       const response = await axios.put(
         `http://localhost:8000/question/${endpoint}`,
         null,
@@ -58,6 +63,12 @@ function PostDetail() {
         ...prevPost,
         upvotes: response.data.upvotes // Assuming the backend returns the updated votes count
       }));
+  
+      // Update the votedPosts state to mark that the user has voted on this post
+      setVotedPosts(prevVotedPosts => ({
+        ...prevVotedPosts,
+        [qid]: voteType
+      }));
     } catch (error) {
       console.error('Failed to vote:', error);
       setError('Failed to vote');
@@ -67,16 +78,24 @@ function PostDetail() {
   const handleAnswerVote = async (aid, voteType) => {
     try {
       const endpoint = voteType === 'upvote' ? `upvoteAnswer/${aid}` : `downvoteAnswer/${aid}`;
+      
+      // Check if the user has already voted on this answer
+      if (votedAnswers[aid] === voteType) {
+        console.log(`Already ${voteType} voted for this answer`);
+        return; // Exit the function if the user has already voted
+      }
+  
       const response = await axios.post(
         `http://localhost:8000/answer/${endpoint}`,
         null,
         {
           headers: {
-            'X-CSRF-Token': csrfToken, // Include the CSRF token in the request headers
+            'X-CSRF-Token': csrfToken,
           },
-          withCredentials: true, // Ensure credentials are sent with the request
+          withCredentials: true,
         }
       );
+  
       setPost(prevPost => ({
         ...prevPost,
         answers: prevPost.answers.map(answer => {
@@ -89,12 +108,18 @@ function PostDetail() {
           return answer;
         })
       }));
+  
+      // Update the votedAnswers state to mark that the user has voted on this answer
+      setVotedAnswers(prevVotedAnswers => ({
+        ...prevVotedAnswers,
+        [aid]: voteType
+      }));
     } catch (error) {
       console.error('Failed to vote:', error);
       setError('Failed to vote');
     }
   };
-
+  
 
   if (!post) {
     return <div>Loading...</div>;
