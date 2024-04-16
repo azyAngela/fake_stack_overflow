@@ -5,7 +5,7 @@ import SignUp from './signUp';
 import PostList from './question';
 import ProfilePage from './profile';
 import NewQuestion from './newQuestion';
-import Answer from './answer';
+import PostDetail from './answer';
 
 
 const Main = () => {
@@ -18,7 +18,7 @@ const Main = () => {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/newquestion" element={<NewQuestion />} />
-            <Route path="/posts/:id" element={<Answer />} />
+            <Route path="/posts/:id" element={<PostDetail />} />
           </Routes>
         </div>
       </div>

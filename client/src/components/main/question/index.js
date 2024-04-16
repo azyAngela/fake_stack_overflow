@@ -89,7 +89,7 @@ const PostList = () => {
                 <button className="btn btn-outline-danger btn-sm" onClick={() => handleVote(post._id, 'downvote')}>Downvote</button>
               </div>
               <div className="col-md-6">
-                <Link to={`/posts/${post.id}`} className="text-decoration-none text-dark">
+                <Link to={`/posts/${post._id}`} className="text-decoration-none text-dark">
                   <h3 className="card-title">{post.title}</h3>
                 </Link>
                 <p className="card-text">{post.text}</p>

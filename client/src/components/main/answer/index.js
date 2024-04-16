@@ -1,77 +1,122 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-function PostDetail () {
-//   const postId = match.params.id;
+function PostDetail() {
+  const [post, setPost] = useState(null);
+  const qid = useParams().id;
 
-  // Dummy post data with votes, you can replace this with actual data fetched from the backend
-  const [post, setPost] = useState({
-    id: 1,
-    title: 'How to use React Router',
-    content: 'Learn how to implement React Router in your project.',
-    author: 'John Doe',
-    postDate: '2022-04-15',
-    tags: ['React', 'React Router', 'Routing'],
-    votes: 0,
-    answers: [
-      {
-        id: 1,
-        content: 'You can use the <Link> component to create links in React Router.',
-        author: 'Jane Smith',
-        answerDate: '2022-04-16',
-        votes: 0
-      },
-      {
-        id: 1,
-        content: 'You can use the <Link> component to create links in React Router.',
-        author: 'Jane Smith',
-        answerDate: '2022-04-16',
-        votes: 0
-      },
-      // Add more answers as needed
-    ]
-  });
+  const [error, setError] = useState('');
 
-  const handlePostVote = (voteType) => {
-    setPost(prevPost => ({
-      ...prevPost,
-      votes: voteType === 'upvote' ? prevPost.votes + 1 : prevPost.votes - 1
-    }));
-  };
+  const [csrfToken, setCsrfToken] = useState('');
 
-  const handleAnswerVote = (answerId, voteType) => {
-    setPost(prevPost => ({
-      ...prevPost,
-      answers: prevPost.answers.map(answer => {
-        if (answer.id === answerId) {
-          return {
-            ...answer,
-            votes: voteType === 'upvote' ? answer.votes + 1 : answer.votes - 1
-          };
+  const fetchCsrfToken = useCallback(async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
+      setCsrfToken(response.data.csrfToken);
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchCsrf = async () => {
+      await fetchCsrfToken();
+    };
+    fetchCsrf();
+  }, [fetchCsrfToken]);
+
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/question/getQuestionById/${qid}`);
+        console.log(response.data);
+        setPost(response.data);
+      } catch (error) {
+        console.error('Error fetching post:', error);
+      }
+    };
+    fetchPost();
+  }, [qid]);
+
+  const handlePostVote = async (qid, voteType) => {
+    try {
+      const endpoint = voteType === 'upvote' ? `/upvoteQuestion/${qid}` : `/downvoteQuestion/${qid}`;
+      const response = await axios.put(
+        `http://localhost:8000/question/${endpoint}`,
+        null,
+        {
+          headers: {
+            'X-CSRF-Token': csrfToken, // Include the CSRF token in the request headers
+          },
+          withCredentials: true, // Ensure credentials are sent with the request
         }
-        return answer;
-      })
-    }));
+      );
+      setPost(prevPost => ({
+        ...prevPost,
+        upvotes: response.data.upvotes // Assuming the backend returns the updated votes count
+      }));
+    } catch (error) {
+      console.error('Failed to vote:', error);
+      setError('Failed to vote');
+    }
   };
+  
+  const handleAnswerVote = async (answerId) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/answer/upvoteAnswer/${answerId}`,
+        null,
+        {
+          headers: {
+            'X-CSRF-Token': csrfToken, // Include the CSRF token in the request headers
+          },
+          withCredentials: true, // Ensure credentials are sent with the request
+        }
+      );
+      setPost(prevPost => ({
+        ...prevPost,
+        answers: prevPost.answers.map(answer => {
+          if (answer.id === answerId) {
+            return {
+              ...answer,
+              votes: response.data.votes // Assuming the backend returns the updated votes count
+            };
+          }
+          return answer;
+        })
+      }));
+    } catch (error) {
+      console.error('Failed to vote:', error);
+      setError('Failed to vote');
+    }
+  };
+  
+
+  if (!post) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container mt-5">
       <div className="card mb-3">
         <div className="card-body">
           <h2 className="card-title">{post.title}</h2>
-          <p className="card-text">{post.content}</p>
+          <p className="card-text">{post.text}</p>
           <div className="tags mt-3">
             {post.tags.map(tag => (
               <span key={tag} className="badge bg-primary me-1">{tag}</span>
             ))}
           </div>
           <div className="mt-4">
-            <div>{`Author: ${post.author}`}</div>
-            <div>{`Posted on: ${post.postDate}`}</div>
+            <div>{`Author: ${post.asked_by}`}</div>
+            <div>{`Posted on: ${post.ask_date_time}`}</div>
           </div>
           <div className="mt-3">
-            <button className="btn btn-outline-primary btn-sm" onClick={() => handlePostVote('upvote')}>Upvote</button>
-            <span className="mx-2">{post.votes}</span>
-            <button className="btn btn-outline-danger btn-sm" onClick={() => handlePostVote('downvote')}>Downvote</button>
+            <button className="btn btn-outline-primary btn-sm" onClick={() => handlePostVote(post._id, 'upvote')}>Upvote</button>
+            <span className="mx-2">{post.upvotes}</span>
+            <button className="btn btn-outline-danger btn-sm" onClick={() => handlePostVote(post._id, 'downvote')}>Downvote</button>
           </div>
         </div>
       </div>
@@ -79,88 +124,22 @@ function PostDetail () {
       {post.answers.map(answer => (
         <div key={answer.id} className="card mb-3">
           <div className="card-body">
-            <p className="card-text">{answer.content}</p>
+            <p className="card-text">{answer.text}</p>
             <div className="mt-4">
-              <div>{`Author: ${answer.author}`}</div>
-              <div>{`Posted on: ${answer.answerDate}`}</div>
+              <div>{`Author: ${answer.username}`}</div>
+              <div>{`Posted on: ${answer.answer_date_time}`}</div>
             </div>
             <div className="mt-3">
-              <button className="btn btn-outline-primary btn-sm" onClick={() => handleAnswerVote(answer.id, 'upvote')}>Upvote</button>
-              <span className="mx-2">{answer.votes}</span>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => handleAnswerVote(answer.id, 'downvote')}>Downvote</button>
+              <button className="btn btn-outline-primary btn-sm" onClick={() => handleAnswerVote(answer.id)}>Upvote</button>
+              <span className="mx-2">{answer.upvotes}</span>
+              <button className="btn btn-outline-danger btn-sm" onClick={() => handleAnswerVote(answer.id)}>Downvote</button>
             </div>
           </div>
         </div>
       ))}
+      {error && <div className="mt-3 text-danger">{error}</div>}
     </div>
   );
 };
 
 export default PostDetail;
-
-// import React from 'react';
-
-// const Answer = () => {
-//   // Assuming the post ID is passed as a parameter in the URL
-// //   const postId = match.params.id;
-
-//   // Dummy post data, you can replace this with actual data fetched from the backend
-//   const post = {
-//     id: 1,
-//     title: 'How to use React Router',
-//     content: 'Learn how to implement React Router in your project.',
-//     author: 'John Doe',
-//     postDate: '2022-04-15',
-//     tags: ['React', 'React Router', 'Routing'],
-//     answers: [
-//       {
-//         id: 1,
-//         content: 'You can use the <Link> component to create links in React Router.',
-//         author: 'Jane Smith',
-//         answerDate: '2022-04-16',
-//       },
-//       {
-//         id: 2,
-//         content: 'You can use the <Link> component to create links in React Router.',
-//         author: 'Jane Smith',
-//         answerDate: '2022-04-16',
-//       },
-//       // Add more answers as needed
-//     ]
-//   };
-
-//   return (
-//     <div className="container mt-5">
-//       <div className="card mb-3">
-//         <div className="card-body">
-//           <h2 className="card-title">{post.title}</h2>
-//           <p className="card-text">{post.content}</p>
-//           <div className="tags mt-3">
-//             {post.tags.map(tag => (
-//               <span key={tag} className="badge bg-primary me-1">{tag}</span>
-//             ))}
-//           </div>
-//           <div className="mt-4">
-//             <div>{`Author: ${post.author}`}</div>
-//             <div>{`Posted on: ${post.postDate}`}</div>
-//           </div>
-//         </div>
-//       </div>
-//       <h3>Answers</h3>
-//       {post.answers.map(answer => (
-//         <div key={answer.id} className="card mb-3">
-//           <div className="card-body">
-//             <p className="card-text">{answer.content}</p>
-//             <div className="mt-4">
-//               <div>{`Author: ${answer.author}`}</div>
-//               <div>{`Posted on: ${answer.answerDate}`}</div>
-//             </div>
-//           </div>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default Answer;
-
