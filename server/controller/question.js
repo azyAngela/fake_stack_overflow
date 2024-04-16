@@ -9,7 +9,7 @@ router.use(express.json());
 
 router.get("/getQuestion", async (req, res) => {
     try {
-        const questions = await Question.find().populate("answers");
+        const questions = await Question.find().populate("answers").populate("tags");
         res.status(200).json(questions);
     } catch (error) {
         console.error("Failed to get questions:", error);
@@ -61,7 +61,7 @@ router.post("/addQuestion", async (req, res) => {
     try {
         for (let tag of todoTags) {
             const newTag = await addTag(tag);
-            tagIds.push(newTag);
+            tagIds.push(tag);
         }
         body.tags = tagIds;
         const newQuestion = await Question.create(body);
