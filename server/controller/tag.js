@@ -1,5 +1,6 @@
 const express = require("express");
-
+const Tag = require("../models/tags");
+const Question = require("../models/questions");
 const router = express.Router();
 router.use(express.json());
 

@@ -18,12 +18,14 @@
         "csurf": "^1.11.0",
         "express": "^4.19.2",
         "express-session": "^1.18.0",
-        "jest": "^29.7.0",
         "jsonwebtoken": "*",
-        "mongoose": "^8.3.1",
-        "mysql": "*"
+        "mockingoose": "^2.16.2",
+        "mongoose": "*",
+        "mysql": "*",
+        "supertest": "^6.3.4"
     },
     "devDependencies": {
-        "eslint": "^8.54.0"
+        "eslint": "^8.54.0",
+        "jest": "^29.7.0"
     }
 }
