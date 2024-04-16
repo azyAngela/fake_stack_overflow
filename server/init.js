@@ -25,7 +25,7 @@ function questionCreate(title, text, tags, answers, asked_by, ask_date_time, vie
     let qstndetail = {
     title: title,
     text: text,
-    tags: tags,
+    tags: tags.map(tag => tag.name),
     asked_by: asked_by
     }
     if (answers != false) qstndetail.answers = answers;

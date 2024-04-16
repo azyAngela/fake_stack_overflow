@@ -1,22 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
-import { useUser } from '../../../utlis/userprovider';
+import { getMetaData } from '../../../utlis/dateFormat';
 import { useNavigate } from 'react-router';
+import { useUser } from '../../../utlis/userprovider';
+import { Link } from 'react-router-dom';
 const ProfilePage = () => {
     // Dummy data for badges and activity
-    const dummyBadges = ['Gold', 'Silver', 'Bronze'];
-    const dummyActivity = ['Posted a question', 'Answered a question', 'Commented on a post'];
 
     // State for editable fields
     const [isEditing, setIsEditing] = useState(false);
-    const [username, setUsername] = useState('JohnDoe');
-    const [aboutMe, setAboutMe] = useState('');
-    const { csrfToken, setUser } = useUser();
+    const [editUserName, setEditUserName] = useState('');
+    const [editPassword, setEditPassword] = useState('');
+    const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
+    const [csrfToken, setCsrfToken] = useState('');
+    const {setUser, user} = useUser();
     const navigate = useNavigate();
+    const fetchCsrfToken = useCallback(async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
+        setCsrfToken(response.data.csrfToken);
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    }, []);
+  
+    useEffect(() => {
+      const fetchCsrf = async () => {
+        await fetchCsrfToken();
+      };
+      fetchCsrf();
+      }, [fetchCsrfToken]);
     // Function to handle save changes
-    const handleSaveChanges = () => {
+    const handleSaveChanges = async () => {
         // Save changes to backend or update state as needed
-        setIsEditing(false);
+        if (editPassword === '' || editUserName === '') {
+            setError('Please fill in all fields');
+            return;
+        }
+
+        // Make a PUT request to the backend endpoint
+        try {
+            let newuser= {username: editUserName, email: user.email, password: editPassword}
+    
+            const response = await axios.post('http://localhost:8000/profile/updateProfile', newuser, {
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                },
+                withCredentials: true,
+            });
+            setUser(response.data.user);
+            setEditPassword('');
+            setEditUserName('');
+            setMessage('User updated successfully');
+            setIsEditing(false);
+          } catch (error) {
+            setError('Error updating user:', error);
+          }
+       
     };
 
     const handleLogout = async () => {
@@ -46,33 +87,28 @@ const ProfilePage = () => {
                             <input
                                 type="text"
                                 className="form-control mb-2"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={editUserName}
+                                onChange={(e) => setEditUserName( e.target.value)}
+                                placeholder='Username'
                             />
-                            <textarea
+                            <input
                                 className="form-control"
-                                value={aboutMe}
-                                onChange={(e) => setAboutMe(e.target.value)}
-                                rows="3"
-                                placeholder="About me"
+                                value={editPassword}
+                                onChange={(e) => setEditPassword(e.target.value)}
+                                placeholder="Password"
                             />
                         </div>
                     ) : (
                         <div>
                             <div className="mb-3">
-                                <strong>Username:</strong> {username}
+                                <strong>Username:</strong> {user.username}
                             </div>
                             <div className="mb-3">
-                                <strong>Email:</strong> johndoe@example.com
+                                <strong>Email:</strong> {user.email}
                             </div>
                             <div className="mb-3">
-                                <strong>Reputation:</strong> 1000
+                                <strong>Reputation:</strong> {user.reputation}
                             </div>
-                            {aboutMe && (
-                                <div className="mb-3">
-                                    <strong>About Me:</strong> {aboutMe}
-                                </div>
-                            )}
                         </div>
                     )}
                     {!isEditing && (
@@ -99,26 +135,59 @@ const ProfilePage = () => {
                             Cancel
                         </button>
                     )}
+                     {error && <div className="mt-3 text-danger">{error}</div>}
+                    {message && <div className="mt-3 text-primary">{message}</div>}
                 </div>
             </div>
             <div className="card mb-3">
                 <div className="card-body">
-                    <h3 className="card-title">Badges</h3>
-                    <div className="mb-3">
-                        {dummyBadges.map((badge, index) => (
-                            <span key={index} className="badge bg-primary me-1">{badge}</span>
-                        ))}
-                    </div>
+                    <h3 className="card-title">Question Activity History</h3>
+                    {user.questions.map(post => (
+                        <div key={post._id} className="card mb-3">
+                        <div className="card-body">
+                            <div className="row">
+                            <div className="col-md-3 d-flex flex-column align-items-center">
+                                <div className="vote-count mb-2">Upvotes: {post.upvotes}</div>
+                            </div>
+                            <div className="col-md-6">
+                                <Link to={`/posts/${post._id}`} className="text-decoration-none text-dark">
+                                <h3 className="card-title">{post.title}</h3>
+                                </Link>
+                                <p className="card-text">{post.text}</p>
+                                <div className="tags mt-3">
+                                {post.tags.map(tag => (
+                                    <span key={tag} className="badge bg-primary me-1">{tag}</span>
+                                ))}
+                                </div>
+                            </div>
+                            <div className="col-md-3">
+                                <div>
+                                <div>{`asked ${getMetaData(new Date(post.ask_date_time))}`}</div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    ))}
                 </div>
             </div>
             <div className="card mb-3">
                 <div className="card-body">
-                    <h3 className="card-title">Activity History</h3>
-                    <ul>
-                        {dummyActivity.map((item, index) => (
-                            <li key={index}>{item}</li>
-                        ))}
-                    </ul>
+                    <h3 className="card-title">Answer Activity History</h3>
+                    {user.answers.map(answer => (
+                        <div key={answer._id} className="card mb-3">
+                        <div className="card-body">
+                            <p className="card-text">{answer.text}</p>
+                            <div className="mt-4">
+                            <div>{`answered by ${answer.ans_by}`}</div>
+                            <div>{`answered ${getMetaData(new Date(answer.ans_date_time))}`}</div>
+                            </div>
+                            <div className="mt-3">
+                                <span>Upvotes: {answer.upvotes}</span>
+                            </div>
+                        </div>
+                        </div>
+                    ))}
                 </div>
             </div>
             <div className='mb-3'>
