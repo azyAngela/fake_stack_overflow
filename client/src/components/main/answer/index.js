@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { getMetaData } from '../../../utlis/dateFormat';
 
 function PostDetail() {
   const [post, setPost] = useState(null);
@@ -62,11 +63,12 @@ function PostDetail() {
       setError('Failed to vote');
     }
   };
-  
-  const handleAnswerVote = async (answerId) => {
+
+  const handleAnswerVote = async (aid, voteType) => {
     try {
-      const response = await axios.put(
-        `http://localhost:8000/answer/upvoteAnswer/${answerId}`,
+      const endpoint = voteType === 'upvote' ? `upvoteAnswer/${aid}` : `downvoteAnswer/${aid}`;
+      const response = await axios.post(
+        `http://localhost:8000/answer/${endpoint}`,
         null,
         {
           headers: {
@@ -78,10 +80,10 @@ function PostDetail() {
       setPost(prevPost => ({
         ...prevPost,
         answers: prevPost.answers.map(answer => {
-          if (answer.id === answerId) {
+          if (answer._id === aid) {
             return {
               ...answer,
-              votes: response.data.votes // Assuming the backend returns the updated votes count
+              upvotes: response.data.upvotes // Assuming the backend returns the updated votes count
             };
           }
           return answer;
@@ -92,7 +94,7 @@ function PostDetail() {
       setError('Failed to vote');
     }
   };
-  
+
 
   if (!post) {
     return <div>Loading...</div>;
@@ -111,7 +113,7 @@ function PostDetail() {
           </div>
           <div className="mt-4">
             <div>{`Author: ${post.asked_by}`}</div>
-            <div>{`Posted on: ${post.ask_date_time}`}</div>
+            <div>{`Posted on: ${getMetaData(new Date(post.ask_date_time))}`}</div>
           </div>
           <div className="mt-3">
             <button className="btn btn-outline-primary btn-sm" onClick={() => handlePostVote(post._id, 'upvote')}>Upvote</button>
@@ -120,19 +122,26 @@ function PostDetail() {
           </div>
         </div>
       </div>
-      <h3>Answers</h3>
+      <div className="row">
+        <div className="col-md-6">
+          <h3>Answers</h3>
+        </div>
+        <div className="col-md-6 d-flex justify-content-end">
+          <Link to={`/newAnswer/${qid}`} className="btn btn-primary mb-3">Create an Answer</Link>
+        </div>
+      </div>
       {post.answers.map(answer => (
-        <div key={answer.id} className="card mb-3">
+        <div key={answer._id} className="card mb-3">
           <div className="card-body">
             <p className="card-text">{answer.text}</p>
             <div className="mt-4">
-              <div>{`Author: ${answer.username}`}</div>
-              <div>{`Posted on: ${answer.answer_date_time}`}</div>
+              <div>{`answered by ${answer.ans_by}`}</div>
+              <div>{`answered ${getMetaData(new Date(answer.ans_date_time))}`}</div>
             </div>
             <div className="mt-3">
-              <button className="btn btn-outline-primary btn-sm" onClick={() => handleAnswerVote(answer.id)}>Upvote</button>
+              <button className="btn btn-outline-primary btn-sm" onClick={() => handleAnswerVote(answer._id, 'upvote')}>Upvote</button>
               <span className="mx-2">{answer.upvotes}</span>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => handleAnswerVote(answer.id)}>Downvote</button>
+              <button className="btn btn-outline-danger btn-sm" onClick={() => handleAnswerVote(answer._id, 'downvote')}>Downvote</button>
             </div>
           </div>
         </div>

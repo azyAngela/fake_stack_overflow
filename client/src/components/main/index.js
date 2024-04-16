@@ -6,6 +6,7 @@ import PostList from './question';
 import ProfilePage from './profile';
 import NewQuestion from './newQuestion';
 import PostDetail from './answer';
+import NewAnswer from './newAnswer';
 
 
 const Main = () => {
@@ -19,6 +20,7 @@ const Main = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/newquestion" element={<NewQuestion />} />
             <Route path="/posts/:id" element={<PostDetail />} />
+            <Route path="/newanswer/:qid" element={<NewAnswer />} />
           </Routes>
         </div>
       </div>
