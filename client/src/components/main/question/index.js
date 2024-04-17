@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { getMetaData } from '../../../utlis/dateFormat';
 
-const PostList = () => {
+const PostList = ({search}) => {
   const [allPosts, setAllPosts] = useState([]);
   const [error, setError] = useState('');
   const [csrfToken, setCsrfToken] = useState('');
@@ -83,6 +83,29 @@ const PostList = () => {
     }
   };
 
+  const filteredPosts = allPosts.filter(post => {
+    const keywords = [];
+    const tags = [];
+    const words = search.split(" ");
+
+    words.forEach(word => {
+      if (word.startsWith("[") && word.endsWith("]")) {
+        // Extract tags
+        const tag = word.substring(1, word.length - 1);
+        tags.push(tag);
+      } else {
+        // Keywords
+        keywords.push(word);
+      }
+    });
+
+    // Implement your filter logic here
+    // For example, check if the post title or tags match the search query
+    // This is a simplified example, you may need to adjust it based on your requirements
+    return keywords.some(keyword => post.title.toLowerCase().includes(keyword.toLowerCase()) || keywords.some(keyword => post.text.toLowerCase().includes(keyword.toLowerCase()))) ||
+          tags.some(tag => post.tags.includes(tag.toLowerCase()));
+  });
+
 
   return (
     <div className="container mt-5">
@@ -94,7 +117,7 @@ const PostList = () => {
           <Link to="/newquestion" className="btn btn-primary">Create New Post</Link>
         </div>
       </div>
-      {allPosts.map(post => (
+      {filteredPosts.map(post => (
         <div key={post._id} className="card mb-3">
           <div className="card-body">
             <div className="row">
