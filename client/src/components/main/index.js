@@ -9,12 +9,12 @@ import PostDetail from './answer';
 import NewAnswer from './newAnswer';
 
 
-const Main = () => {
+const Main = ({search}) => {
   return (
       <div id="main" className="main">
         <div id="right_main" className="right_main">
           <Routes>
-            <Route path="/" element={<PostList />} />
+            <Route path="/" element={<PostList search={search} />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/profile" element={<ProfilePage />} />
