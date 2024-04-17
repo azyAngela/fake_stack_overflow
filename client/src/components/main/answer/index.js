@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
-import { getMetaData } from '../../../utlis/dateFormat';
+import PostContent from './postContent';
+import AnswerContent from './answerContent';
 
 function PostDetail() {
   const [post, setPost] = useState(null);
@@ -195,42 +196,16 @@ function PostDetail() {
 
   return (
     <div className="container mt-5">
-      <div className="card mb-3">
-        <div className="card-body">
-          <h2 className="card-title">{post.title}</h2>
-          {editingText ? (
-            <textarea
-              value={editedText}
-              onChange={e => setEditedText(e.target.value)}
-              className="form-control mb-2"
-            />
-          ) : (
-            <p className="card-text">{post.text}</p>
-          )}
-          <div className="tags mt-3">
-            {post.tags.map(tag => (
-              <span key={tag} className="badge bg-primary me-1">{tag}</span>
-            ))}
-          </div>
-          <div className="mt-4">
-            <div>{`asked by ${post.asked_by}`}</div>
-            <div>{`asked ${getMetaData(new Date(post.ask_date_time))}`}</div>
-          </div>
-          <div className="mt-3">
-            <button className="btn btn-outline-primary btn-sm" onClick={() => handlePostVote(post._id, 'upvote')}>Upvote</button>
-            <span className="mx-2">{post.upvotes}</span>
-            <button className="btn btn-outline-danger btn-sm" onClick={() => handlePostVote(post._id, 'downvote')}>Downvote</button>
-          </div>
-          <button className="btn btn-outline-secondary btn-sm" onClick={editingText ? handleSave : handleEdit}>
-            {editingText ? 'Save' : 'Edit'}
-          </button>
-          {editingText && (
-            <button className="btn btn-secondary btn-sm ms-2" onClick={cancelEditPost}>
-              Cancel
-            </button>
-          )}
-        </div>
-      </div>
+      <PostContent
+        post={post}
+        handleVote={handlePostVote}
+        editingText={editingText}
+        editedText={editedText}
+        setEditedText={setEditedText}
+        handleSave={handleSave}
+        handleEdit={handleEdit}
+        cancelEditPost={cancelEditPost}
+      />
       <div className="row">
         <div className="col-md-6">
           <h3>Answers</h3>
@@ -240,49 +215,17 @@ function PostDetail() {
         </div>
       </div>
       {post.answers.map(answer => (
-        <div key={answer._id} className="card mb-3">
-          <div className="card-body">
-            <div className='container'>
-              <div className='row'>
-                <div className="col-md-3 d-flex flex-column align-items-center">
-                  <button className="btn btn-outline-primary btn-sm mb-2" onClick={() => handleAnswerVote(answer._id, 'upvote')}>Upvote</button>
-                  <span className="vote-count mb-2">{answer.upvotes}</span>
-                  <button className="btn btn-outline-danger btn-sm" onClick={() => handleAnswerVote(answer._id, 'downvote')}>Downvote</button>
-                </div>
-                <div className='col-md-8'>
-                  {editingAnswerId === answer._id ? (
-                    <div>
-                      <textarea
-                        value={editedAnswerText}
-                        onChange={e => setEditedAnswerText(e.target.value)}
-                        className="form-control mb-2"
-                      />
-                      <div className="row">
-                        <div className="col-md-6">
-                          <button className="btn btn-primary btn-sm" onClick={() => handleSaveAnswer(answer._id)}>Save</button>
-                          <button className="btn btn-secondary btn-sm ms-2" onClick={cancelEdit}>Cancel</button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="card-text">{answer.text}</p>
-                      <div className="mt-4 row">
-                        <div className="col-md-6">
-                          <div>{`answered by ${answer.ans_by}`}</div>
-                          <div>{`answered ${getMetaData(new Date(answer.ans_date_time))}`}</div>
-                        </div>
-                        <div className="col-md-6 d-flex justify-content-end">
-                          <button className="btn btn-outline-secondary btn-sm" onClick={() => startEdit(answer._id)}>Edit</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AnswerContent
+          key={answer._id}
+          answer={answer}
+          handleAnswerVote={handleAnswerVote}
+          editingAnswerId={editingAnswerId}
+          editedAnswerText={editedAnswerText}
+          setEditedAnswerText={setEditedAnswerText}
+          handleSaveAnswer={handleSaveAnswer}
+          startEdit={startEdit}
+          cancelEdit={cancelEdit}
+        />
       ))}
       {error && <div className="mt-3 text-danger">{error}</div>}
     </div>
