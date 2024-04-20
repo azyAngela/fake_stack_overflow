@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "bootstrap": "^5.3.3"
+  },
+  "devDependencies": {
+    "@cypress/react": "^8.0.0"
   }
 }
