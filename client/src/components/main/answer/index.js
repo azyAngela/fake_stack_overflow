@@ -47,25 +47,34 @@ function PostDetail() {
 
   const handlePostVote = async (qid, voteType) => {
     try {
-      const endpoint = voteType === 'upvote' ? `/upvoteQuestion/${qid}` : `/downvoteQuestion/${qid}`;
-      if (votedPosts[qid] === voteType) {
-        console.log(`Already ${voteType} voted for this post`);
-        return;
+      const prevVote = votedPosts[qid];
+      let increment;
+  
+      if (prevVote === voteType) {
+        increment = voteType === 'upvote' ? -1 : 1;
+        voteType = 'cancel'; 
+      } else if (prevVote === 'upvote' && voteType === 'downvote') {
+        increment = -2;
+      } else if (prevVote === 'downvote' && voteType === 'upvote') {
+        increment = 2;
+      } else {
+        increment = voteType === 'upvote' ? 1 : -1;
       }
-      const response = await axios.put(
-        `http://localhost:8000/question/${endpoint}`,
-        null,
-        {
-          headers: {
-            'X-CSRF-Token': csrfToken,
-          },
-          withCredentials: true,
-        }
-      );
+  
+      const endpoint = voteType === 'upvote' ? `/upvoteQuestion/${qid}` : `/downvoteQuestion/${qid}`;
+  
+      await axios.put(`http://localhost:8000/question/${endpoint}`, null, {
+        headers: {
+          'X-CSRF-Token': csrfToken,
+        },
+        withCredentials: true,
+      });
+
       setPost(prevPost => ({
         ...prevPost,
-        upvotes: response.data.upvotes
+        upvotes: prevPost.upvotes + increment
       }));
+
       setVotedPosts(prevVotedPosts => ({
         ...prevVotedPosts,
         [qid]: voteType
@@ -75,36 +84,46 @@ function PostDetail() {
       setError('Failed to vote');
     }
   };
+  
 
   const handleAnswerVote = async (aid, voteType) => {
     try {
-      const endpoint = voteType === 'upvote' ? `upvoteAnswer/${aid}` : `downvoteAnswer/${aid}`;
-      if (votedAnswers[aid] === voteType) {
-        console.log(`Already ${voteType} voted for this answer`);
-        return;
+      const prevVote = votedAnswers[aid];
+      let increment;
+  
+      if (prevVote === voteType) {
+        increment = voteType === 'upvote' ? -1 : 1;
+        voteType = 'cancel'; 
+      } else if (prevVote === 'upvote' && voteType === 'downvote') {
+        increment = -2;
+      } else if (prevVote === 'downvote' && voteType === 'upvote') {
+        increment = 2;
+      } else {
+        increment = voteType === 'upvote' ? 1 : -1;
       }
-      const response = await axios.post(
-        `http://localhost:8000/answer/${endpoint}`,
-        null,
-        {
-          headers: {
-            'X-CSRF-Token': csrfToken,
-          },
-          withCredentials: true,
-        }
-      );
+  
+      const endpoint = voteType === 'upvote' ? `upvoteAnswer/${aid}` : `downvoteAnswer/${aid}`;
+  
+      await axios.post(`http://localhost:8000/answer/${endpoint}`, null, {
+        headers: {
+          'X-CSRF-Token': csrfToken,
+        },
+        withCredentials: true,
+      });
+  
       setPost(prevPost => ({
         ...prevPost,
         answers: prevPost.answers.map(answer => {
           if (answer._id === aid) {
             return {
               ...answer,
-              upvotes: response.data.upvotes
+              upvotes: answer.upvotes + increment
             };
           }
           return answer;
         })
       }));
+  
       setVotedAnswers(prevVotedAnswers => ({
         ...prevVotedAnswers,
         [aid]: voteType
@@ -114,7 +133,7 @@ function PostDetail() {
       setError('Failed to vote');
     }
   };
-
+  
   const handleEdit = () => {
     setEditingText(true);
     setEditedText(post.text);

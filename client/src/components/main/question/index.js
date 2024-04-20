@@ -41,29 +41,31 @@ const PostList = ({search}) => {
 
   const handleVote = async (postId, voteType) => {
     try {
-      // Determine the correct endpoint based on the vote type
-      const endpoint = voteType === 'upvote' ? `/upvoteQuestion/${postId}` : `/downvoteQuestion/${postId}`;
-
-      // Check if the user has already voted on this post
-      if (votedPosts[postId] === voteType) {
-        console.log(`Already ${voteType} voted for this post`);
-        return; // Exit the function if the user has already voted
+      const prevVote = votedPosts[postId];
+      let increment;
+      if (prevVote === voteType) {
+        increment = voteType === 'upvote' ? -1 : 1;
+        voteType = 'cancel'; 
+      } else if (prevVote === 'upvote' && voteType === 'downvote') {
+        increment = -2;
+      } else if (prevVote === 'downvote' && voteType === 'upvote') {
+        increment = 2;
+      } else {
+        increment = voteType === 'upvote' ? 1 : -1;
       }
-
-      // Make a PUT request to the backend endpoint
+  
+      const endpoint = voteType === 'upvote' ? `upvoteQuestion/${postId}` : `downvoteQuestion/${postId}`;
+  
       await axios.put(`http://localhost:8000/question/${endpoint}`, null, {
         headers: {
           'X-CSRF-Token': csrfToken
         },
         withCredentials: true,
       });
-
-      // Update the local state with the updated post data
+  
       setAllPosts(allPosts.map(post => {
         if (post._id === postId) {
-          // If the user previously upvoted this post, decrement the upvotes
-          // If the user previously downvoted this post, increment the upvotes
-          const newUpvotes = post.upvotes + (voteType === 'upvote' ? 1 : -1);
+          const newUpvotes = post.upvotes + increment;
           return {
             ...post,
             upvotes: newUpvotes
@@ -71,8 +73,7 @@ const PostList = ({search}) => {
         }
         return post;
       }));
-
-      // Update the votedPosts state to mark that the user has voted on this post
+  
       setVotedPosts(prevVotedPosts => ({
         ...prevVotedPosts,
         [postId]: voteType
