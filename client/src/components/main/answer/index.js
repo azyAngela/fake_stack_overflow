@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import PostContent from './postContent';
 import AnswerContent from './answerContent';
+import { getMetaData } from '../../../utlis/dateFormat';
+import { getCsrfToken } from '../services/profile';
+import { fetchQuestion } from '../services/question';
 
 function PostDetail() {
   const [post, setPost] = useState(null);
@@ -19,8 +22,8 @@ function PostDetail() {
 
   const fetchCsrfToken = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
-      setCsrfToken(response.data.csrfToken);
+      const response = getCsrfToken();
+      setCsrfToken(response);
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }
@@ -36,8 +39,8 @@ function PostDetail() {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/question/getQuestionById/${qid}`);
-        setPost(response.data);
+        const response = await fetchQuestion(qid);
+        setPost(response);
       } catch (error) {
         console.error('Error fetching post:', error);
       }

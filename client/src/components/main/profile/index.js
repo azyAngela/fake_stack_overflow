@@ -1,13 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import axios from 'axios';
 import { getMetaData } from '../../../utlis/dateFormat';
 import { useNavigate } from 'react-router';
 import { useUser } from '../../../utlis/userprovider';
 import { Link } from 'react-router-dom';
+import { getCsrfToken, updateProfile, logout } from '../services/profile.js';
 const ProfilePage = () => {
-    // Dummy data for badges and activity
 
-    // State for editable fields
     const [isEditing, setIsEditing] = useState(false);
     const [editUserName, setEditUserName] = useState('');
     const [editPassword, setEditPassword] = useState('');
@@ -18,8 +16,8 @@ const ProfilePage = () => {
     const navigate = useNavigate();
     const fetchCsrfToken = useCallback(async () => {
       try {
-        const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
-        setCsrfToken(response.data.csrfToken);
+        const response = await getCsrfToken();
+        setCsrfToken(response);
       } catch (error) {
         console.error('Error fetching CSRF token:', error);
       }
@@ -43,13 +41,8 @@ const ProfilePage = () => {
         try {
             let newuser= {username: editUserName, email: user.email, password: editPassword}
     
-            const response = await axios.post('http://localhost:8000/profile/updateProfile', newuser, {
-                headers: {
-                    'X-CSRF-Token': csrfToken,
-                },
-                withCredentials: true,
-            });
-            setUser(response.data.user);
+            const response = await updateProfile(newuser, csrfToken);
+            setUser(response.user);
             setEditPassword('');
             setEditUserName('');
             setMessage('User updated successfully');
@@ -62,19 +55,16 @@ const ProfilePage = () => {
 
     const handleLogout = async () => {
         try {
-          await axios.post('http://localhost:8000/profile/logout', null, {
-            headers: {
-              'X-CSRF-Token': csrfToken,
-            },
-            withCredentials: true,
-          });
-    
-          setUser("");
+            await logout(csrfToken);
+            setUser("");
             navigate('/');
         } catch (error) {
           console.error('Error logging out:', error);
         }
       };
+    if (!user) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="container mt-5">
