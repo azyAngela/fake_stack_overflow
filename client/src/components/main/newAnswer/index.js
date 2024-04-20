@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, useParams} from 'react-router-dom';
 import { useEffect, useCallback } from 'react';
 import { useUser } from "../../../utlis/userprovider";
-
+import { getCsrfToken } from '../services/profile.js';
+import { addAnswer } from '../services/answer.js';
 function NewAnswer() {
   const [answerText, setAnswerText] = useState('');
   const { qid } = useParams();
@@ -16,8 +16,8 @@ function NewAnswer() {
 
   const fetchCsrfToken = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
-      setCsrfToken(response.data.csrfToken);
+      const response = await getCsrfToken();
+      setCsrfToken(response);
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }
@@ -31,26 +31,13 @@ function NewAnswer() {
     }, [fetchCsrfToken]);
 
   const handleCreateAnswer = async () => {
+    const newanswer = { qid: qid,
+      ans: {
+        text: answerText,
+        ans_by: user.username,
+      }}
     try {
-      const response = await axios.post(
-        `http://localhost:8000/answer/addAnswer`,
-        {
-            qid: qid,
-            ans: {
-              text: answerText,
-              ans_by: user.username,
-            }
-          }, 
-          {
-            headers: {
-              'X-CSRF-Token': csrfToken
-            },
-            withCredentials: true,
-          }
-
-      );
-      console.log(response.data);
-      // Redirect to the post detail page after successfully creating the answer
+      await addAnswer(newanswer, csrfToken);
       navigate(`/posts/${qid}`);
     } catch (error) {
       console.error('Failed to create answer:', error);
