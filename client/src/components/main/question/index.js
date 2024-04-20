@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { getMetaData } from '../../../utlis/dateFormat';
+import PostItem from './postItem';
 
 const PostList = ({search}) => {
   const [allPosts, setAllPosts] = useState([]);
@@ -41,29 +41,31 @@ const PostList = ({search}) => {
 
   const handleVote = async (postId, voteType) => {
     try {
-      // Determine the correct endpoint based on the vote type
-      const endpoint = voteType === 'upvote' ? `/upvoteQuestion/${postId}` : `/downvoteQuestion/${postId}`;
-
-      // Check if the user has already voted on this post
-      if (votedPosts[postId] === voteType) {
-        console.log(`Already ${voteType} voted for this post`);
-        return; // Exit the function if the user has already voted
+      const prevVote = votedPosts[postId];
+      let increment;
+      if (prevVote === voteType) {
+        increment = voteType === 'upvote' ? -1 : 1;
+        voteType = 'cancel'; 
+      } else if (prevVote === 'upvote' && voteType === 'downvote') {
+        increment = -2;
+      } else if (prevVote === 'downvote' && voteType === 'upvote') {
+        increment = 2;
+      } else {
+        increment = voteType === 'upvote' ? 1 : -1;
       }
-
-      // Make a PUT request to the backend endpoint
+  
+      const endpoint = voteType === 'upvote' ? `upvoteQuestion/${postId}` : `downvoteQuestion/${postId}`;
+  
       await axios.put(`http://localhost:8000/question/${endpoint}`, null, {
         headers: {
           'X-CSRF-Token': csrfToken
         },
         withCredentials: true,
       });
-
-      // Update the local state with the updated post data
+  
       setAllPosts(allPosts.map(post => {
         if (post._id === postId) {
-          // If the user previously upvoted this post, decrement the upvotes
-          // If the user previously downvoted this post, increment the upvotes
-          const newUpvotes = post.upvotes + (voteType === 'upvote' ? 1 : -1);
+          const newUpvotes = post.upvotes + increment;
           return {
             ...post,
             upvotes: newUpvotes
@@ -71,8 +73,7 @@ const PostList = ({search}) => {
         }
         return post;
       }));
-
-      // Update the votedPosts state to mark that the user has voted on this post
+  
       setVotedPosts(prevVotedPosts => ({
         ...prevVotedPosts,
         [postId]: voteType
@@ -98,11 +99,8 @@ const PostList = ({search}) => {
         keywords.push(word);
       }
     });
-
-    // Implement your filter logic here
-    // For example, check if the post title or tags match the search query
-    // This is a simplified example, you may need to adjust it based on your requirements
-    return keywords.some(keyword => post.title.toLowerCase().includes(keyword.toLowerCase()) || keywords.some(keyword => post.text.toLowerCase().includes(keyword.toLowerCase()))) ||
+    return keywords.some(keyword => post.title.toLowerCase().includes(keyword.toLowerCase()) || 
+          keywords.some(keyword => post.text.toLowerCase().includes(keyword.toLowerCase()))) ||
           tags.some(tag => post.tags.includes(tag.toLowerCase()));
   });
 
@@ -118,34 +116,7 @@ const PostList = ({search}) => {
         </div>
       </div>
       {filteredPosts.map(post => (
-        <div key={post._id} className="card mb-3">
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-3 d-flex flex-column align-items-center">
-                <button className="btn btn-outline-primary btn-sm mb-2" onClick={() => handleVote(post._id, 'upvote')}>Upvote</button>
-                <div className="vote-count mb-2">{post.upvotes}</div>
-                <button className="btn btn-outline-danger btn-sm" onClick={() => handleVote(post._id, 'downvote')}>Downvote</button>
-              </div>
-              <div className="col-md-6">
-                <Link to={`/posts/${post._id}`} className="text-decoration-none text-dark">
-                  <h3 className="card-title">{post.title}</h3>
-                </Link>
-                <p className="card-text">{post.text}</p>
-                <div className="tags mt-3">
-                  {post.tags.map(tag => (
-                    <span key={tag} className="badge bg-primary me-1">{tag}</span>
-                  ))}
-                </div>
-              </div>
-              <div className="col-md-3">
-                <div>
-                  <div>{`asked by: ${post.asked_by}`}</div>
-                  <div>{`asked ${getMetaData(new Date(post.ask_date_time))}`}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PostItem key={post._id} post={post} handleVote={handleVote} />
       ))}
       {error && <div className="mt-3 text-danger">{error}</div>}
     </div>
