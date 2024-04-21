@@ -67,9 +67,9 @@ function PostDetail() {
         return;
       }
       const prevCount = votedPosts[qid] || 0;
-  
+
       let increment = 0;
-  
+
       if (voteType === 'upvote') {
         if (prevCount === 0 || prevCount === 1) {
           increment = prevCount === 0 ? 1 : -1;
@@ -81,18 +81,18 @@ function PostDetail() {
       }
       let newNumber = 0;
       if (voteType === 'upvote') {
-        const response = await upvoteQuestion(qid,increment, csrfToken);
+        const response = await upvoteQuestion(qid, increment, csrfToken);
         newNumber = response.data.upvotes;
       } else if (voteType === 'downvote') {
-        const response = await downvoteQuestion(qid,increment, csrfToken);
+        const response = await downvoteQuestion(qid, increment, csrfToken);
         newNumber = response.data.upvotes;
       }
-  
+
       setPost(prevPost => ({
         ...prevPost,
         upvotes: newNumber
       }));
-  
+
       setVotedPosts(prevVotedPosts => ({
         ...prevVotedPosts,
         [qid]: prevCount + increment
@@ -102,8 +102,8 @@ function PostDetail() {
       setError('Failed to vote');
     }
   };
-  
-  
+
+
   const handleAnswerVote = async (aid, voteType) => {
     try {
       if (!loggedIn) {
@@ -112,9 +112,9 @@ function PostDetail() {
         return;
       }
       const prevCount = votedAnswers[aid] || 0;
-  
+
       let increment = 0;
-  
+
       if (voteType === 'upvote') {
         if (prevCount === 0 || prevCount === 1) {
           increment = prevCount === 0 ? 1 : -1;
@@ -129,7 +129,7 @@ function PostDetail() {
       } else if (voteType === 'downvote') {
         await downvoteAnswer(aid, increment, csrfToken);
       }
-  
+
       setPost(prevPost => ({
         ...prevPost,
         answers: prevPost.answers.map(answer => {
@@ -142,7 +142,7 @@ function PostDetail() {
           return answer;
         })
       }));
-  
+
       setVotedAnswers(prevVotedAnswers => ({
         ...prevVotedAnswers,
         [aid]: prevCount + increment
@@ -152,13 +152,13 @@ function PostDetail() {
       setError('Failed to vote');
     }
   };
-  
-  
+
+
   const handleEdit = () => {
     setEditingText(true);
     setEditedText(post.text);
   };
-  
+
 
   const handleSave = async () => {
     const edited = { text: editedText }
@@ -236,7 +236,10 @@ function PostDetail() {
           <h3>Answers</h3>
         </div>
         <div className="col-md-6 d-flex justify-content-end">
-          <Link to={`/newAnswer/${qid}`} className="btn btn-primary mb-3">Create an Answer</Link>
+          {loggedIn && (
+            <Link to={`/newAnswer/${qid}`} className="btn btn-primary mb-3">Create an Answer</Link>
+          )}
+
         </div>
       </div>
       {post.answers.map(answer => (

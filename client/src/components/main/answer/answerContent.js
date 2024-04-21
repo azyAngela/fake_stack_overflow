@@ -1,23 +1,26 @@
 import { getMetaData } from '../../../utlis/dateFormat';
 import { useUser } from '../../../utlis/userprovider';
+import { useState } from 'react';
 
 
 const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswerText, setEditedAnswerText, handleSaveAnswer, startEdit, cancelEdit, loggedIn }) => {
-  const { user } = useUser(); // Accessing the user object from UserProvider
+
+  const { user } = useUser(); 
+  const isOwner = user && answer.ans_by === user.username;
+  const [errorMessage, setErrorMessage] = useState('');
+
   const handleClick = (answerId, voteType) => {
     if (loggedIn) {
       handleAnswerVote(answerId, voteType);
     } else {
-      alert('Please sign in to vote.');
+      setErrorMessage('Please sign in to vote.');
     }
   };
 
   const handleEditClick = (answerId) => {
-    if (loggedIn && answer.ans_by === user.username) {
+    if (isOwner) {
       startEdit(answerId);
-    } else {
-      alert('You can only edit the item that you own.');
-    }
+    } 
   };
 
   return (
@@ -54,7 +57,10 @@ const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswer
                       <div>{`answered ${getMetaData(new Date(answer.ans_date_time))}`}</div>
                     </div>
                     <div className="col-md-6 d-flex justify-content-end">
-                      <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEditClick(answer._id)}>Edit</button>
+                      {isOwner && (
+                        <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEditClick(answer._id)}>Edit</button>
+                        )}
+                      
                     </div>
                   </div>
                 </div>
@@ -62,6 +68,7 @@ const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswer
             </div>
           </div>
         </div>
+        {errorMessage && <div className="text-danger mt-2">{errorMessage}</div>}
       </div>
     </div>
   );
