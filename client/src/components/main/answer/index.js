@@ -5,6 +5,7 @@ import AnswerContent from './answerContent';
 import { getCsrfToken } from '../services/profile';
 import { downvoteQuestion, fetchQuestion, updateQuestion, upvoteQuestion } from '../services/question';
 import { updateAnswer, upvoteAnswer, downvoteAnswer } from '../services/answer';
+import checkLoginStatus from '../services/checkLoginStatus'; // Import the checkLoginStatus function
 
 
 function PostDetail() {
@@ -17,6 +18,7 @@ function PostDetail() {
   const [editedText, setEditedText] = useState('');
   const [editingAnswerId, setEditingAnswerId] = useState(null);
   const [editedAnswerText, setEditedAnswerText] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false); // State to track login status
 
   const qid = useParams().id;
 
@@ -48,8 +50,22 @@ function PostDetail() {
     fetchPost();
   }, [qid]);
 
+  useEffect(() => {
+    const checkLoggedIn = async () => {
+      const loggedInStatus = await checkLoginStatus(); // Call the checkLoginStatus function
+      setLoggedIn(loggedInStatus); // Update the login status state
+    };
+
+    checkLoggedIn();
+  }, []);
+
   const handlePostVote = async (qid, voteType) => {
     try {
+      if (!loggedIn) {
+        console.log("loggedIn", loggedIn);
+        setError('Please sign in first'); // Set an error message if not logged in
+        return;
+      }
       const prevCount = votedPosts[qid] || 0;
   
       let increment = 0;
@@ -90,6 +106,11 @@ function PostDetail() {
   
   const handleAnswerVote = async (aid, voteType) => {
     try {
+      if (!loggedIn) {
+        console.log("loggedIn", loggedIn);
+        setError('Please sign in first'); // Set an error message if not logged in
+        return;
+      }
       const prevCount = votedAnswers[aid] || 0;
   
       let increment = 0;
@@ -208,6 +229,7 @@ function PostDetail() {
         handleSave={handleSave}
         handleEdit={handleEdit}
         cancelEditPost={cancelEditPost}
+        loggedIn={loggedIn}
       />
       <div className="row">
         <div className="col-md-6">
@@ -228,6 +250,7 @@ function PostDetail() {
           handleSaveAnswer={handleSaveAnswer}
           startEdit={startEdit}
           cancelEdit={cancelEdit}
+          loggedIn={loggedIn}
         />
       ))}
       {error && <div className="mt-3 text-danger">{error}</div>}

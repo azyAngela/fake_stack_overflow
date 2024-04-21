@@ -1,14 +1,24 @@
 import { getMetaData } from '../../../utlis/dateFormat';
 
-const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswerText, setEditedAnswerText, handleSaveAnswer, startEdit, cancelEdit }) => (
+const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswerText, setEditedAnswerText, handleSaveAnswer, startEdit, cancelEdit, loggedIn }) => {
+  const handleClick = (answerId, voteType) => {
+    if (loggedIn) {
+      handleAnswerVote(answerId, voteType);
+    } else {
+      // Display error message to the user
+      alert('Please sign in to vote.');
+    }
+  };
+
+  return (
     <div className="card mb-3">
       <div className="card-body">
         <div className='container'>
           <div className='row'>
             <div className="col-md-3 d-flex flex-column align-items-center">
-              <button className="btn btn-outline-primary btn-sm mb-2" onClick={() => handleAnswerVote(answer._id, 'upvote')}>Upvote</button>
-              <span className="vote-count mb-2">{answer.upvotes}</span>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => handleAnswerVote(answer._id, 'downvote')}>Downvote</button>
+                  <button className="btn btn-outline-primary btn-sm mb-2" onClick={() => handleClick(answer._id, 'upvote')}>Upvote</button>
+                  <span className="vote-count mb-2">{answer.upvotes}</span>
+                  <button className="btn btn-outline-danger btn-sm" onClick={() => handleClick(answer._id, 'downvote')}>Downvote</button>
             </div>
             <div className='col-md-8'>
               {editingAnswerId === answer._id ? (
@@ -45,5 +55,6 @@ const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswer
       </div>
     </div>
   );
+};
 
 export default AnswerContent;
