@@ -1,12 +1,14 @@
 import { getMetaData } from '../../../utlis/dateFormat';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 const PostItem = ({ post, handleVote, loggedIn }) => {
+  const [errorMessage, setErrorMessage] = useState('');
   const handleClick = (postId, voteType) => {
     if (loggedIn) {
       handleVote(postId, voteType);
     } else {
-      alert('Please sign in to vote.');
+      setErrorMessage('Please sign in to vote.');
     }
   };
 
@@ -38,6 +40,7 @@ const PostItem = ({ post, handleVote, loggedIn }) => {
             </div>
           </div>
         </div>
+        {errorMessage && <div className="text-danger mt-2">{errorMessage}</div>}
       </div>
     </div>
   );

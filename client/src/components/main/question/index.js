@@ -113,7 +113,10 @@ const PostList = ({search}) => {
           <h2 className="mb-0">All Posts</h2>
         </div>
         <div className="col-md-6 d-flex justify-content-end">
-          <Link to="/newquestion" className="btn btn-primary">Create New Post</Link>
+          {loggedIn && (
+            <Link to="/newquestion" className="btn btn-primary">Create New Post</Link>
+          )}
+          
         </div>
       </div>
       {filteredPosts.map(post => (

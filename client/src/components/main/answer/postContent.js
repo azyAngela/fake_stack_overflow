@@ -1,23 +1,23 @@
 import { getMetaData } from '../../../utlis/dateFormat';
 import { useUser } from '../../../utlis/userprovider';
+import { useState } from 'react';
 
 const PostContent = ({ post, handleVote, editingText, editedText, setEditedText, handleSave, handleEdit, cancelEditPost }) => {
   const { user } = useUser(); // Accessing the user object from UserProvider
   const isOwner = user && post.asked_by === user.username;
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleClick = (postId, voteType) => {
     if (user) {
       handleVote(postId, voteType);
     } else {
-      alert('Please sign in to vote.');
+      setErrorMessage('Please sign in to vote.');
     }
   };
 
   const handleEditClick = () => {
     if (isOwner) {
       handleEdit();
-    } else {
-      alert('You can only edit the item that you own.');
     }
   };
 
@@ -44,22 +44,24 @@ const PostContent = ({ post, handleVote, editingText, editedText, setEditedText,
           <div>{`asked ${getMetaData(new Date(post.ask_date_time))}`}</div>
         </div>
         <div className="mt-3">
-          {user && (
-            <>
+
               <button className="btn btn-outline-primary btn-sm" onClick={() => handleClick(post._id, 'upvote')}>Upvote</button>
               <span className="mx-2">{post.upvotes}</span>
               <button className="btn btn-outline-danger btn-sm" onClick={() => handleClick(post._id, 'downvote')}>Downvote</button>
-            </>
-          )}
+
         </div>
-        <button className="btn btn-outline-secondary btn-sm" onClick={editingText ? handleSave : handleEditClick}>
-          {editingText ? 'Save' : 'Edit'}
-        </button>
+        {isOwner && (
+                  <button className="btn btn-outline-secondary btn-sm" onClick={editingText ? handleSave : handleEditClick}>
+                  {editingText ? 'Save' : 'Edit'}
+                </button>
+          )}
+
         {editingText && (
           <button className="btn btn-secondary btn-sm ms-2" onClick={cancelEditPost}>
             Cancel
           </button>
         )}
+        {errorMessage && <div className="text-danger mt-2">{errorMessage}</div>}
       </div>
     </div>
   );
