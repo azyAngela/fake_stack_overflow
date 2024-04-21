@@ -1,6 +1,27 @@
 import { getMetaData } from '../../../utlis/dateFormat';
+import { useUser } from '../../../utlis/userprovider';
 
-const PostContent = ({ post, handleVote, editingText, editedText, setEditedText, handleSave, handleEdit, cancelEditPost }) => (
+const PostContent = ({ post, handleVote, editingText, editedText, setEditedText, handleSave, handleEdit, cancelEditPost }) => {
+  const { user } = useUser(); // Accessing the user object from UserProvider
+  const isOwner = user && post.asked_by === user.username;
+
+  const handleClick = (postId, voteType) => {
+    if (user) {
+      handleVote(postId, voteType);
+    } else {
+      alert('Please sign in to vote.');
+    }
+  };
+
+  const handleEditClick = () => {
+    if (isOwner) {
+      handleEdit();
+    } else {
+      alert('You can only edit the item that you own.');
+    }
+  };
+
+  return (
     <div className="card mb-3">
       <div className="card-body">
         <h2 className="card-title">{post.title}</h2>
@@ -23,11 +44,15 @@ const PostContent = ({ post, handleVote, editingText, editedText, setEditedText,
           <div>{`asked ${getMetaData(new Date(post.ask_date_time))}`}</div>
         </div>
         <div className="mt-3">
-          <button className="btn btn-outline-primary btn-sm" onClick={() => handleVote(post._id, 'upvote')}>Upvote</button>
-          <span className="mx-2">{post.upvotes}</span>
-          <button className="btn btn-outline-danger btn-sm" onClick={() => handleVote(post._id, 'downvote')}>Downvote</button>
+          {user && (
+            <>
+              <button className="btn btn-outline-primary btn-sm" onClick={() => handleClick(post._id, 'upvote')}>Upvote</button>
+              <span className="mx-2">{post.upvotes}</span>
+              <button className="btn btn-outline-danger btn-sm" onClick={() => handleClick(post._id, 'downvote')}>Downvote</button>
+            </>
+          )}
         </div>
-        <button className="btn btn-outline-secondary btn-sm" onClick={editingText ? handleSave : handleEdit}>
+        <button className="btn btn-outline-secondary btn-sm" onClick={editingText ? handleSave : handleEditClick}>
           {editingText ? 'Save' : 'Edit'}
         </button>
         {editingText && (
@@ -38,5 +63,6 @@ const PostContent = ({ post, handleVote, editingText, editedText, setEditedText,
       </div>
     </div>
   );
+};
 
 export default PostContent;
