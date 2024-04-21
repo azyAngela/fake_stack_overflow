@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import PostContent from './postContent';
 import AnswerContent from './answerContent';
-import { getMetaData } from '../../../utlis/dateFormat';
 import { getCsrfToken } from '../services/profile';
-import { fetchQuestion } from '../services/question';
+import { downvoteQuestion, fetchQuestion, updateQuestion, upvoteQuestion } from '../services/question';
+import { updateAnswer, upvoteAnswer, downvoteAnswer } from '../services/answer';
+
 
 function PostDetail() {
   const [post, setPost] = useState(null);
@@ -22,8 +22,9 @@ function PostDetail() {
 
   const fetchCsrfToken = useCallback(async () => {
     try {
-      const response = getCsrfToken();
+      const response = await getCsrfToken();
       setCsrfToken(response);
+      console.log(response);
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }
@@ -63,17 +64,18 @@ function PostDetail() {
           increment = prevCount === 0 ? -1 : 1;
         }
       }
-  
-      const response = await axios.put(`http://localhost:8000/question/${voteType}Question/${qid}`, { increment }, {
-        headers: {
-          'X-CSRF-Token': csrfToken
-        },
-        withCredentials: true,
-      });
+      let newNumber = 0;
+      if (voteType === 'upvote') {
+        const response = await upvoteQuestion(qid,increment, csrfToken);
+        newNumber = response.data.upvotes;
+      } else if (voteType === 'downvote') {
+        const response = await downvoteQuestion(qid,increment, csrfToken);
+        newNumber = response.data.upvotes;
+      }
   
       setPost(prevPost => ({
         ...prevPost,
-        upvotes: response.data.upvotes
+        upvotes: newNumber
       }));
   
       setVotedPosts(prevVotedPosts => ({
@@ -102,15 +104,11 @@ function PostDetail() {
           increment = prevCount === 0 ? -1 : 1;
         }
       }
-  
-      const endpoint = voteType === 'upvote' ? `/upvoteAnswer/${aid}` : `/downvoteAnswer/${aid}`;
-  
-      await axios.put(`http://localhost:8000/answer/${endpoint}`, { increment }, {
-        headers: {
-          'X-CSRF-Token': csrfToken,
-        },
-        withCredentials: true,
-      });
+      if (voteType === 'upvote') {
+        await upvoteAnswer(aid, increment, csrfToken);
+      } else if (voteType === 'downvote') {
+        await downvoteAnswer(aid, increment, csrfToken);
+      }
   
       setPost(prevPost => ({
         ...prevPost,
@@ -143,17 +141,9 @@ function PostDetail() {
   
 
   const handleSave = async () => {
+    const edited = { text: editedText }
     try {
-      const response = await axios.put(
-        `http://localhost:8000/question/updateQuestion/${post._id}`,
-        { text: editedText },
-        {
-          headers: {
-            'X-CSRF-Token': csrfToken,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await updateQuestion(qid, edited, csrfToken);
       setPost(prevPost => ({
         ...prevPost,
         text: response.data.text
@@ -177,17 +167,9 @@ function PostDetail() {
   };
 
   const handleSaveAnswer = async (answerId) => {
+    const edited = { text: editedAnswerText }
     try {
-      const response = await axios.put(
-        `http://localhost:8000/answer/updateAnswer/${answerId}`,
-        { text: editedAnswerText },
-        {
-          headers: {
-            'X-CSRF-Token': csrfToken,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await updateAnswer(answerId, edited, csrfToken);
       setPost(prevPost => ({
         ...prevPost,
         answers: prevPost.answers.map(answer => {

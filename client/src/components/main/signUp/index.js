@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useEffect} from 'react';
-import axios from 'axios';
 import { useUser } from '../../../utlis/userprovider';
 import { useNavigate } from 'react-router-dom';
-
+import { getCsrfToken, signup } from '../services/profile.js';
 
 const SignUp = () => {
   const [fullName, setFullName] = useState('');
@@ -17,8 +16,8 @@ const SignUp = () => {
   const fetchCsrfToken = useCallback(async () =>
   {
    try {
-     const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
-     setCsrfToken(response.data.csrfToken);
+     const response = await getCsrfToken();
+     setCsrfToken(response);
    } catch (error) {
      console.error('Error fetching CSRF token:', error);
    }
@@ -58,13 +57,7 @@ const SignUp = () => {
       try {
         let newuser= {username: fullName, email: email, password: password}
 
-        const response = await axios.post('http://localhost:8000/profile/signup', newuser, {
-            headers: {
-                'X-CSRF-Token': csrfToken,
-            },
-            withCredentials: true,
-        });
-        console.log(response.data);
+        const response = await signup(newuser, csrfToken);
         setConfirmPassword('');
         setPassword('');
         setFullName('');

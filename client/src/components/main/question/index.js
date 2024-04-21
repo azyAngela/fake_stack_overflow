@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import PostItem from './postItem';
+import { getCsrfToken } from '../services/profile';
+import { getQuestionList, upvoteQuestion, downvoteQuestion} from '../services/question';
 
 const PostList = ({search}) => {
   const [allPosts, setAllPosts] = useState([]);
@@ -11,8 +12,8 @@ const PostList = ({search}) => {
 
   const fetchCsrfToken = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
-      setCsrfToken(response.data.csrfToken);
+      const response = await getCsrfToken();
+      setCsrfToken(response);
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }
@@ -28,9 +29,8 @@ const PostList = ({search}) => {
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/question/getquestion');
+        const response = await getQuestionList();
         setAllPosts(response.data); // Update allPosts state with fetched data
-        console.log(response.data);
       } catch (error) {
         console.error('Error fetching question:', error);
       }
@@ -54,19 +54,21 @@ const PostList = ({search}) => {
           increment = prevCount === 0 ? -1 : 1;
         }
       }
-  
-      const response = await axios.put(`http://localhost:8000/question/${voteType}Question/${postId}`, { increment }, {
-        headers: {
-          'X-CSRF-Token': csrfToken
-        },
-        withCredentials: true,
-      });
+      let newNumber = 0;
+      if (voteType === 'upvote') {
+        const response = await upvoteQuestion(postId,increment, csrfToken);
+        newNumber = response.data.upvotes;
+      } else if (voteType === 'downvote') {
+        const response = await downvoteQuestion(postId,increment, csrfToken);
+        newNumber = response.data.upvotes;
+      }
+
   
       setAllPosts(allPosts.map(post => {
         if (post._id === postId) {
           return {
             ...post,
-            upvotes: response.data.upvotes 
+            upvotes: newNumber
           };
         }
         return post;

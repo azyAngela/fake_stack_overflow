@@ -21,3 +21,60 @@ export const addAnswer = async (answer, csrfToken) => {
         throw error;
     }
 }
+
+export const updateAnswer = async (id, answer, csrfToken) => {
+    try {
+        const response = await axios.put(
+            `${clientUrl}/updateAnswer/${id}`,
+            answer,
+            {
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                },
+                withCredentials: true
+            }
+        );
+        return response;
+    } catch (error) {
+        console.error('Failed to update answer:', error);
+        throw error;
+    }
+}
+
+export const upvoteAnswer = async (id,increment, csrfToken) => {
+    try {
+        const response = await axios.put(
+            `${clientUrl}/upvoteAnswer/${id}`,
+            {increment},
+            {
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                },
+                withCredentials: true
+            }
+        );
+        return response;
+    } catch (error) {
+        console.error('Failed to upvote answer:', error);
+        throw error;
+    }
+}
+
+export const downvoteAnswer = async (id,increment, csrfToken) => {
+    try {
+        const response = await axios.put(
+            `${clientUrl}/downvoteAnswer/${id}`,
+            {increment},
+            {
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                },
+                withCredentials: true
+            }
+        );
+        return response;
+    } catch (error) {
+        console.error('Failed to upvote answer:', error);
+        throw error;
+    }
+}

@@ -56,3 +56,33 @@ export const login = async (username, password, csrfToken) => {
         throw error;
     }
 }
+
+export const signup = async (newUser, csrfToken) => {
+    try {
+        const response = await axios.post(`${clientUrl}/signup`, newUser, {
+            headers: {
+                'X-CSRF-Token': csrfToken,
+            },
+            withCredentials: true,
+        });
+        return response
+    } catch (error) {
+        console.error('Error signing up:', error);
+        throw error;
+    }
+}
+
+export const checkLoginStatus = async (csrfToken) => {
+    try {
+        const response = await axios.get(`${clientUrl}/check-login`, {
+            headers: {
+                'X-CSRF-Token': csrfToken,
+            },
+            withCredentials: true,
+        });
+        return response;
+    } catch (error) {
+        console.error('Error checking login status:', error);
+        throw error;
+    }
+}
