@@ -38,3 +38,30 @@
 .btn:hover {
     background-color: #0056b3;
 }
+
+#profileButton {
+    background-color: #d5d5d5; 
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    padding-right: 30px;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 25px; 
+    transition: background-color 0.3s ease;
+  }
+  
+  #profileButton:hover {
+    background-color: #494949; 
+  }
+  
+  #profileButton:before {
+    content: '👤'; 
+    margin-right: 8px;
+    font-size: 20px;
+  }
+  
