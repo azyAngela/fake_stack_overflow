@@ -33,10 +33,12 @@ router.get("/getQuestionById/:qid", async (req, res) => {
 });
 
 router.put("/upvoteQuestion/:qid", async (req, res) => {
-    const id  = req.params.qid;
+    const id = req.params.qid;
     try {
-        const updated = await Question.findOneAndUpdate({ _id: id }, { $inc: { upvotes: 1 } }, { new: true });
-        res.status(200).json(updated);
+        const increment = req.body.increment || 0;
+        const updatedQuestion = await Question.findByIdAndUpdate(id, { $inc: { upvotes: increment } }, { new: true });
+
+        res.status(200).json(updatedQuestion);
     } catch (error) {
         console.error("Failed to upvote question:", error);
         res.status(500).json({ message: "Failed to upvote question due to server error." });
@@ -44,15 +46,18 @@ router.put("/upvoteQuestion/:qid", async (req, res) => {
 });
 
 router.put("/downvoteQuestion/:qid", async (req, res) => {
-    const id  = req.params.qid;
+    const id = req.params.qid;
     try {
-        const updated = await Question.findOneAndUpdate({ _id: id }, { $inc: { upvotes: -1 } }, { new: true });
-        res.status(200).json(updated);
+        const increment = req.body.increment || 0;
+        const updatedQuestion = await Question.findByIdAndUpdate(id, { $inc: { upvotes: increment } }, { new: true });
+
+        res.status(200).json(updatedQuestion);
     } catch (error) {
-        console.error("Failed to upvote question:", error);
-        res.status(500).json({ message: "Failed to upvote question due to server error." });
+        console.error("Failed to downvote question:", error);
+        res.status(500).json({ message: "Failed to downvote question due to server error." });
     }
 });
+
 
 router.post("/addQuestion", async (req, res) => {
     const body  = req.body;

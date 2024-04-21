@@ -68,25 +68,29 @@ router.delete("/deleteAnswer/:aid", async (req, res) => {
     }
 });
 
-router.post("/upvoteAnswer/:aid", async (req, res) => {
-    const id  = req.params.aid;
+router.put("/upvoteAnswer/:aid", async (req, res) => {
+    const id = req.params.aid;
     try {
-        const updated = await Answer.findOneAndUpdate( { _id: id }, { $inc: { upvotes: 1 } }, { new: true });
-        res.status(200).json(updated);
+        const increment = req.body.increment || 0;
+        const updatedAnswer = await Answer.findByIdAndUpdate(id, { $inc: { upvotes: increment } }, { new: true });
+
+        res.status(200).json(updatedAnswer);
     } catch (error) {
         console.error("Failed to upvote answer:", error);
         res.status(500).json({ message: "Failed to upvote answer due to server error." });
     }
 });
 
-router.post("/downvoteAnswer/:aid", async (req, res) => {
-    const id  = req.params.aid;
+router.put("/downvoteAnswer/:aid", async (req, res) => {
+    const id = req.params.aid;
     try {
-        const updated = await Answer.findOneAndUpdate( { _id: id }, { $inc: { upvotes: -1 } }, { new: true });
-        res.status(200).json(updated);
+        const increment = req.body.increment || 0;
+        const updatedAnswer = await Answer.findByIdAndUpdate(id, { $inc: { upvotes: increment } }, { new: true });
+
+        res.status(200).json(updatedAnswer);
     } catch (error) {
-        console.error("Failed to upvote answer:", error);
-        res.status(500).json({ message: "Failed to upvote answer due to server error." });
+        console.error("Failed to downvote answer:", error);
+        res.status(500).json({ message: "Failed to downvote answer due to server error." });
     }
 });
 // add appropriate HTTP verbs and their endpoints to the router.
