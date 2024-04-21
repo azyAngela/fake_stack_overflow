@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PostItem from './postItem';
 import { getCsrfToken } from '../services/profile';
 import { getQuestionList, upvoteQuestion, downvoteQuestion} from '../services/question';
+import { filterPosts } from '../../../utlis/helper';
 
 const PostList = ({search}) => {
   const [allPosts, setAllPosts] = useState([]);
@@ -84,25 +85,7 @@ const PostList = ({search}) => {
     }
   };
   
-  const filteredPosts = allPosts.filter(post => {
-    const keywords = [];
-    const tags = [];
-    const words = search.split(" ");
-
-    words.forEach(word => {
-      if (word.startsWith("[") && word.endsWith("]")) {
-        // Extract tags
-        const tag = word.substring(1, word.length - 1);
-        tags.push(tag);
-      } else {
-        // Keywords
-        keywords.push(word);
-      }
-    });
-    return keywords.some(keyword => post.title.toLowerCase().includes(keyword.toLowerCase()) || 
-          keywords.some(keyword => post.text.toLowerCase().includes(keyword.toLowerCase()))) ||
-          tags.some(tag => post.tags.includes(tag.toLowerCase()));
-  });
+  const filteredPosts = filterPosts(allPosts, search);
 
 
   return (

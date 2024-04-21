@@ -70,7 +70,6 @@ router.post("/addQuestion", async (req, res) => {
         }
         body.tags = tagIds;
         const newQuestion = await Question.create(body);
-        //console.log(newQuestion);
         res.status(200).json(newQuestion);
     } catch (error) {
         console.error("Failed to add question:", error);
