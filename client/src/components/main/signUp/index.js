@@ -125,7 +125,7 @@ const SignUp = () => {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">Sign Up</button>
+        <button type="submit" className="btn btn-primary">Register</button>
       </form>
       {error && <div className="mt-3 text-danger">{error}</div>}
       {message && <div className="mt-3 text-primary">{message}</div>}

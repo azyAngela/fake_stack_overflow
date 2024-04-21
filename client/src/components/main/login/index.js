@@ -61,7 +61,7 @@ function Login() {
             <label htmlFor="password" className="form-label">Password: </label>
             <input style={{ maxWidth: '300px' }} type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          <button className="btn btn-primary" onClick={handleLogin}>Login</button>
+          <button className="btn btn-primary" onClick={handleLogin}>Log in</button>
         </div>
         
         {message && <div className="mt-3 text-primary">{message}</div>}
