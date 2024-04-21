@@ -61,11 +61,11 @@ export const getQuestionList = async () => {
     }
 }
 
-export const upvoteQuestion = async (id, csrfToken) => {
+export const upvoteQuestion = async (id, increment, csrfToken) => {
     try {
-        const response = await axios.post(
+        const response = await axios.put(
             `${clientUrl}/upvoteQuestion/${id}`,
-            null,
+            {increment},
             {
                 headers: {
                     'X-CSRF-Token': csrfToken
@@ -80,11 +80,11 @@ export const upvoteQuestion = async (id, csrfToken) => {
     }
 }
 
-export const downvoteQuestion = async (id, csrfToken) => {
+export const downvoteQuestion = async (id,increment , csrfToken) => {
     try {
-        const response = await axios.post(
+        const response = await axios.put(
             `${clientUrl}/downvoteQuestion/${id}`,
-            null,
+            {increment},
             {
                 headers: {
                     'X-CSRF-Token': csrfToken

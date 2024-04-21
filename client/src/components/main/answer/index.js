@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import PostContent from './postContent';
 import AnswerContent from './answerContent';
 import { getCsrfToken } from '../services/profile';
-import { fetchQuestion, updateQuestion } from '../services/question';
-import { updateAnswer } from '../services/answer';
+import { downvoteQuestion, fetchQuestion, updateQuestion, upvoteQuestion } from '../services/question';
+import { updateAnswer, upvoteAnswer, downvoteAnswer } from '../services/answer';
+
 
 function PostDetail() {
   const [post, setPost] = useState(null);
@@ -64,17 +64,18 @@ function PostDetail() {
           increment = prevCount === 0 ? -1 : 1;
         }
       }
-  
-      const response = await axios.put(`http://localhost:8000/question/${voteType}Question/${qid}`, { increment }, {
-        headers: {
-          'X-CSRF-Token': csrfToken
-        },
-        withCredentials: true,
-      });
+      let newNumber = 0;
+      if (voteType === 'upvote') {
+        const response = await upvoteQuestion(qid,increment, csrfToken);
+        newNumber = response.data.upvotes;
+      } else if (voteType === 'downvote') {
+        const response = await downvoteQuestion(qid,increment, csrfToken);
+        newNumber = response.data.upvotes;
+      }
   
       setPost(prevPost => ({
         ...prevPost,
-        upvotes: response.data.upvotes
+        upvotes: newNumber
       }));
   
       setVotedPosts(prevVotedPosts => ({
@@ -103,15 +104,11 @@ function PostDetail() {
           increment = prevCount === 0 ? -1 : 1;
         }
       }
-  
-      const endpoint = voteType === 'upvote' ? `/upvoteAnswer/${aid}` : `/downvoteAnswer/${aid}`;
-  
-      await axios.put(`http://localhost:8000/answer/${endpoint}`, { increment }, {
-        headers: {
-          'X-CSRF-Token': csrfToken,
-        },
-        withCredentials: true,
-      });
+      if (voteType === 'upvote') {
+        await upvoteAnswer(aid, increment, csrfToken);
+      } else if (voteType === 'downvote') {
+        await downvoteAnswer(aid, increment, csrfToken);
+      }
   
       setPost(prevPost => ({
         ...prevPost,

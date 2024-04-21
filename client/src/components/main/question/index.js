@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import PostItem from './postItem';
 import { getCsrfToken } from '../services/profile';
-import { getQuestionList } from '../services/question';
+import { getQuestionList, upvoteQuestion, downvoteQuestion} from '../services/question';
 
 const PostList = ({search}) => {
   const [allPosts, setAllPosts] = useState([]);
@@ -55,19 +54,21 @@ const PostList = ({search}) => {
           increment = prevCount === 0 ? -1 : 1;
         }
       }
-  
-      const response = await axios.put(`http://localhost:8000/question/${voteType}Question/${postId}`, { increment }, {
-        headers: {
-          'X-CSRF-Token': csrfToken
-        },
-        withCredentials: true,
-      });
+      let newNumber = 0;
+      if (voteType === 'upvote') {
+        const response = await upvoteQuestion(postId,increment, csrfToken);
+        newNumber = response.data.upvotes;
+      } else if (voteType === 'downvote') {
+        const response = await downvoteQuestion(postId,increment, csrfToken);
+        newNumber = response.data.upvotes;
+      }
+
   
       setAllPosts(allPosts.map(post => {
         if (post._id === postId) {
           return {
             ...post,
-            upvotes: response.data.upvotes 
+            upvotes: newNumber
           };
         }
         return post;

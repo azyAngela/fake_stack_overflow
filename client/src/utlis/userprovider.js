@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { getCsrfToken, checkLoginStatus } from '../components/main/services/profile';
 
 // Creating a context
 const UserContext = createContext(null);
@@ -11,26 +11,18 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         // Fetch CSRF token when the provider is mounted
         const fetchCsrfToken = async () => {
-            const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
-            setCsrfToken(response.data.csrfToken);
+            const response = await getCsrfToken();
+            setCsrfToken(response);
+            if (response) {
+                const loginresponse = await checkLoginStatus(csrfToken);
+                const resLoggedIn = loginresponse.data.loggedIn;
+                if(resLoggedIn){
+                  setUser(loginresponse.data.user);
+                }
+            }
         };
         fetchCsrfToken();
-        const checkLoginStatus = async () => {
-            try {
-              const response = await axios.get('http://localhost:8000/profile/check-login', {
-                headers: {
-                  'X-CSRF-Token': csrfToken,
-                },
-                withCredentials: true,
-              });
-              const resLoggedIn = response.data.loggedIn;
-              if(resLoggedIn)
-                setUser(response.data.user);
-            } catch (error) {
-              console.error('Error checking login status:', error);
-            }
-        }
-        checkLoginStatus();
+        
     }, []);
 
     // Provide user and CSRF token in context
