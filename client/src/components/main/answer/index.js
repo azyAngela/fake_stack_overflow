@@ -24,7 +24,6 @@ function PostDetail() {
     try {
       const response = await getCsrfToken();
       setCsrfToken(response);
-      console.log(response);
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }

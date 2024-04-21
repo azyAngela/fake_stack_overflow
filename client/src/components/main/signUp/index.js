@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect} from 'react';
 import { useUser } from '../../../utlis/userprovider';
 import { useNavigate } from 'react-router-dom';
 import { getCsrfToken, signup } from '../services/profile.js';
+import { validateSignup } from '../../../utlis/helper.js';
 
 const SignUp = () => {
   const [fullName, setFullName] = useState('');
@@ -49,11 +50,11 @@ const SignUp = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Here you can perform validation and registration logic
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-    } else {
-      // Proceed with registration logic
+    const validateResult = validateSignup(email, password, confirmPassword,fullName);
+    if (validateResult){
+      setError(validateResult);
+      return;
+    }
       try {
         let newuser= {username: fullName, email: email, password: password}
 
@@ -70,7 +71,6 @@ const SignUp = () => {
       } catch (error) {
         setError('Error logging out:', error);
       }
-    }
   };
 
   return (

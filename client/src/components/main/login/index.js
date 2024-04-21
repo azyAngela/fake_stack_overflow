@@ -9,6 +9,8 @@ function Login() {
   const navigate = useNavigate();
   const [csrfToken, setCsrfToken] = useState('');
   const { setUser} = useUser();
+  const [error, setError] = useState('');
+
   const jumpMain = () => { navigate('/'); }
 
   const fetchCsrfToken = useCallback(async () =>
@@ -17,7 +19,7 @@ function Login() {
      const response = await getCsrfToken();
      setCsrfToken(response);
    } catch (error) {
-     console.error('Error fetching CSRF token:', error);
+     setError('Error fetching CSRF token:', error);
    }
   }, []);
   useEffect(() => {
@@ -40,7 +42,7 @@ function Login() {
             jumpMain();
         }, 2000);
     } catch (error) {
-      console.error('Error logging in:', error);
+      setError('Error logging in:', error);
     }
   };
 
@@ -63,6 +65,8 @@ function Login() {
         </div>
         
         {message && <div className="mt-3 text-primary">{message}</div>}
+        {error && <div className="mt-3 text-danger">{error}</div>}
+
     </div>
   );
 }
