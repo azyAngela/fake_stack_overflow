@@ -1,14 +1,34 @@
 import { getMetaData } from '../../../utlis/dateFormat';
+import { useUser } from '../../../utlis/userprovider';
 
-const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswerText, setEditedAnswerText, handleSaveAnswer, startEdit, cancelEdit }) => (
+
+const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswerText, setEditedAnswerText, handleSaveAnswer, startEdit, cancelEdit, loggedIn }) => {
+  const { user } = useUser(); // Accessing the user object from UserProvider
+  const handleClick = (answerId, voteType) => {
+    if (loggedIn) {
+      handleAnswerVote(answerId, voteType);
+    } else {
+      alert('Please sign in to vote.');
+    }
+  };
+
+  const handleEditClick = (answerId) => {
+    if (loggedIn && answer.ans_by === user.username) {
+      startEdit(answerId);
+    } else {
+      alert('You can only edit the item that you own.');
+    }
+  };
+
+  return (
     <div className="card mb-3">
       <div className="card-body">
         <div className='container'>
           <div className='row'>
             <div className="col-md-3 d-flex flex-column align-items-center">
-              <button className="btn btn-outline-primary btn-sm mb-2" onClick={() => handleAnswerVote(answer._id, 'upvote')}>Upvote</button>
+              <button className="btn btn-outline-primary btn-sm mb-2" onClick={() => handleClick(answer._id, 'upvote')}>Upvote</button>
               <span className="vote-count mb-2">{answer.upvotes}</span>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => handleAnswerVote(answer._id, 'downvote')}>Downvote</button>
+              <button className="btn btn-outline-danger btn-sm" onClick={() => handleClick(answer._id, 'downvote')}>Downvote</button>
             </div>
             <div className='col-md-8'>
               {editingAnswerId === answer._id ? (
@@ -34,7 +54,7 @@ const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswer
                       <div>{`answered ${getMetaData(new Date(answer.ans_date_time))}`}</div>
                     </div>
                     <div className="col-md-6 d-flex justify-content-end">
-                      <button className="btn btn-outline-secondary btn-sm" onClick={() => startEdit(answer._id)}>Edit</button>
+                      <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEditClick(answer._id)}>Edit</button>
                     </div>
                   </div>
                 </div>
@@ -45,5 +65,6 @@ const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswer
       </div>
     </div>
   );
+};
 
 export default AnswerContent;

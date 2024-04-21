@@ -4,12 +4,14 @@ import PostItem from './postItem';
 import { getCsrfToken } from '../services/profile';
 import { getQuestionList, upvoteQuestion, downvoteQuestion} from '../services/question';
 import { filterPosts } from '../../../utlis/helper';
+import checkLoginStatus from '../services/checkLoginStatus'; // Import the checkLoginStatus function
 
 const PostList = ({search}) => {
   const [allPosts, setAllPosts] = useState([]);
   const [error, setError] = useState('');
   const [csrfToken, setCsrfToken] = useState('');
   const [votedPosts, setVotedPosts] = useState({});
+  const [loggedIn, setLoggedIn] = useState(false); // State to track login status
 
   const fetchCsrfToken = useCallback(async () => {
     try {
@@ -40,11 +42,27 @@ const PostList = ({search}) => {
     fetchQuestion();
   }, []);
 
+  useEffect(() => {
+    const checkLoggedIn = async () => {
+      const loggedInStatus = await checkLoginStatus(); // Call the checkLoginStatus function
+      setLoggedIn(loggedInStatus); // Update the login status state
+    };
+
+    checkLoggedIn();
+  }, []);
+
   const handleVote = async (postId, voteType) => {
     try {
       const prevCount = votedPosts[postId] || 0;
   
       let increment = 0;
+
+      // Check if the user is logged in before allowing voting
+      if (!loggedIn) {
+        console.log("loggedIn", loggedIn);
+        setError('Please sign in first'); // Set an error message if not logged in
+        return;
+      }
   
       if (voteType === 'upvote') {
         if (prevCount === 0 || prevCount === 1) {
@@ -99,7 +117,8 @@ const PostList = ({search}) => {
         </div>
       </div>
       {filteredPosts.map(post => (
-        <PostItem key={post._id} post={post} handleVote={handleVote} />
+        <PostItem key={post._id} post={post} handleVote={handleVote}
+        loggedIn={loggedIn} />
       ))}
       {error && <div className="mt-3 text-danger">{error}</div>}
     </div>

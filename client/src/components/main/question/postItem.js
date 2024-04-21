@@ -1,15 +1,25 @@
 import { getMetaData } from '../../../utlis/dateFormat';
 import { Link } from 'react-router-dom';
 
-const PostItem = ({ post, handleVote }) => (
+const PostItem = ({ post, handleVote, loggedIn }) => {
+  const handleClick = (postId, voteType) => {
+    if (loggedIn) {
+      handleVote(postId, voteType);
+    } else {
+      alert('Please sign in to vote.');
+    }
+  };
+
+  return (
     <div key={post._id} className="card mb-3">
       <div className="card-body">
         <div className="row">
           <div className="col-md-3 d-flex flex-column align-items-center">
-            <button className="btn btn-outline-primary btn-sm mb-2" onClick={() => handleVote(post._id, 'upvote')}>Upvote</button>
+            <button className="btn btn-outline-primary btn-sm mb-2" onClick={() => handleClick(post._id, 'upvote')}>Upvote</button>
             <div className="vote-count mb-2">{post.upvotes}</div>
-            <button className="btn btn-outline-danger btn-sm" onClick={() => handleVote(post._id, 'downvote')}>Downvote</button>
+            <button className="btn btn-outline-danger btn-sm" onClick={() => handleClick(post._id, 'downvote')}>Downvote</button>
           </div>
+
           <div className="col-md-6">
             <Link to={`/posts/${post._id}`} className="text-decoration-none text-dark">
               <h3 className="card-title">{post.title}</h3>
@@ -31,5 +41,6 @@ const PostItem = ({ post, handleVote }) => (
       </div>
     </div>
   );
+};
 
 export default PostItem;
