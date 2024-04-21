@@ -42,22 +42,21 @@ const PostList = ({search}) => {
 
   const handleVote = async (postId, voteType) => {
     try {
-      const prevVote = votedPosts[postId];
-      let increment;
-      if (prevVote === voteType) {
-        increment = voteType === 'upvote' ? -1 : 1;
-        voteType = 'cancel'; 
-      } else if (prevVote === 'upvote' && voteType === 'downvote') {
-        increment = -2;
-      } else if (prevVote === 'downvote' && voteType === 'upvote') {
-        increment = 2;
-      } else {
-        increment = voteType === 'upvote' ? 1 : -1;
+      const prevCount = votedPosts[postId] || 0;
+  
+      let increment = 0;
+  
+      if (voteType === 'upvote') {
+        if (prevCount === 0 || prevCount === 1) {
+          increment = prevCount === 0 ? 1 : -1;
+        }
+      } else if (voteType === 'downvote') {
+        if (prevCount === 0 || prevCount === -1) {
+          increment = prevCount === 0 ? -1 : 1;
+        }
       }
   
-      const endpoint = voteType === 'upvote' ? `upvoteQuestion/${postId}` : `downvoteQuestion/${postId}`;
-  
-      await axios.put(`http://localhost:8000/question/${endpoint}`, null, {
+      const response = await axios.put(`http://localhost:8000/question/${voteType}Question/${postId}`, { increment }, {
         headers: {
           'X-CSRF-Token': csrfToken
         },
@@ -66,10 +65,9 @@ const PostList = ({search}) => {
   
       setAllPosts(allPosts.map(post => {
         if (post._id === postId) {
-          const newUpvotes = post.upvotes + increment;
           return {
             ...post,
-            upvotes: newUpvotes
+            upvotes: response.data.upvotes 
           };
         }
         return post;
@@ -77,14 +75,14 @@ const PostList = ({search}) => {
   
       setVotedPosts(prevVotedPosts => ({
         ...prevVotedPosts,
-        [postId]: voteType
+        [postId]: prevCount + increment 
       }));
     } catch (error) {
       console.error('Failed to vote:', error);
       setError('Failed to vote');
     }
   };
-
+  
   const filteredPosts = allPosts.filter(post => {
     const keywords = [];
     const tags = [];
