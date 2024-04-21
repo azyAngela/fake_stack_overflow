@@ -73,4 +73,31 @@ describe('<Header />', () => {
     cy.get('#loginButton').should('be.visible');
     cy.get('#signUpButton').should('be.visible');
   });
+
+  it('shows user profile button when user is logged in', () => {
+    const mockUser = { username: 'testUser' };
+    const searchQuery = '';
+    const handleSearchSpy = cy.spy().as('handleSearchSpy');
+    cy.intercept('GET', '/profile/csrf-token', {
+      statusCode: 200,
+      body: { csrfToken: 'mockToken' }
+    }).as('getCsrfToken');
+    cy.intercept('GET', '/profile/check-login', { 
+      statusCode: 200,
+      body: {
+        loggedIn: true,
+        user: mockUser
+      }
+    }).as('checkLoginStatus');
+
+    cy.mount(<UserProvider >
+      <MemoryRouter>
+            <Header search={searchQuery} handleSearch={handleSearchSpy} />
+        </MemoryRouter>
+        </UserProvider>
+      );
+      cy.wait('@getCsrfToken').its('response.statusCode').should('eq', 200);
+    cy.wait('@checkLoginStatus').its('response.statusCode').should('eq', 200);
+    cy.get('#profileButton').should('contain', mockUser.username);
+  });
 });

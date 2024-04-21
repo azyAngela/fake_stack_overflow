@@ -43,7 +43,7 @@ const Header = ({ search, handleSearch }) => {
             )}
             {user && (
                 <div className="button-group">
-                    <button id="loginButton" className="btn" onClick={() => navigate('/profile')}>
+                    <button id="profileButton" className="btn" onClick={() => navigate('/profile')}>
                         {user.username}
                     </button>
                 </div>
