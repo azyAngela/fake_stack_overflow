@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../../../utlis/userprovider";
+import { getCsrfToken } from '../services/profile';
+import { addQuestion } from '../services/question';
 
 const CreatePost = () => {
   const [formData, setFormData] = useState({
@@ -19,8 +20,8 @@ const CreatePost = () => {
 
   const fetchCsrfToken = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
-      setCsrfToken(response.data.csrfToken);
+      const response = await getCsrfToken();
+      setCsrfToken(response);
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }
@@ -53,18 +54,9 @@ const CreatePost = () => {
         asked_by: user.username,
         ask_date_time: currentDate
       };
-      console.log(formData.tags);
 
-      const response = await axios.post('http://localhost:8000/question/addQuestion', data, {
-        headers: {
-          'X-CSRF-Token': csrfToken
-        },
-        withCredentials: true,
-      });
+      await addQuestion(data, csrfToken);
 
-      console.log(response.data);
-      console.log(data); // Logging the data being sent to the server
-      // Clear the form fields
       setFormData({
         title: '',
         text: '',

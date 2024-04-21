@@ -3,9 +3,9 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import PostContent from './postContent';
 import AnswerContent from './answerContent';
-import { getMetaData } from '../../../utlis/dateFormat';
 import { getCsrfToken } from '../services/profile';
-import { fetchQuestion } from '../services/question';
+import { fetchQuestion, updateQuestion } from '../services/question';
+import { updateAnswer } from '../services/answer';
 
 function PostDetail() {
   const [post, setPost] = useState(null);
@@ -22,8 +22,9 @@ function PostDetail() {
 
   const fetchCsrfToken = useCallback(async () => {
     try {
-      const response = getCsrfToken();
+      const response = await getCsrfToken();
       setCsrfToken(response);
+      console.log(response);
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }
@@ -143,17 +144,9 @@ function PostDetail() {
   };
 
   const handleSave = async () => {
+    const edited = { text: editedText }
     try {
-      const response = await axios.put(
-        `http://localhost:8000/question/updateQuestion/${post._id}`,
-        { text: editedText },
-        {
-          headers: {
-            'X-CSRF-Token': csrfToken,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await updateQuestion(qid, edited, csrfToken);
       setPost(prevPost => ({
         ...prevPost,
         text: response.data.text
@@ -177,17 +170,9 @@ function PostDetail() {
   };
 
   const handleSaveAnswer = async (answerId) => {
+    const edited = { text: editedAnswerText }
     try {
-      const response = await axios.put(
-        `http://localhost:8000/answer/updateAnswer/${answerId}`,
-        { text: editedAnswerText },
-        {
-          headers: {
-            'X-CSRF-Token': csrfToken,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await updateAnswer(answerId, edited, csrfToken);
       setPost(prevPost => ({
         ...prevPost,
         answers: prevPost.answers.map(answer => {

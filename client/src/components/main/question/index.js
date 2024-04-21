@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import PostItem from './postItem';
+import { getCsrfToken } from '../services/profile';
+import { getQuestionList } from '../services/question';
 
 const PostList = ({search}) => {
   const [allPosts, setAllPosts] = useState([]);
@@ -11,8 +13,8 @@ const PostList = ({search}) => {
 
   const fetchCsrfToken = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:8000/profile/csrf-token', { withCredentials: true });
-      setCsrfToken(response.data.csrfToken);
+      const response = await getCsrfToken();
+      setCsrfToken(response);
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }
@@ -28,9 +30,8 @@ const PostList = ({search}) => {
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/question/getquestion');
+        const response = await getQuestionList();
         setAllPosts(response.data); // Update allPosts state with fetched data
-        console.log(response.data);
       } catch (error) {
         console.error('Error fetching question:', error);
       }
