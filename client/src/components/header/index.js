@@ -3,15 +3,21 @@ import React, { useState } from "react";
 import "./index.css";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../../utlis/userprovider";
+import { updateProfile } from "../main/services/profile";
 
 const Header = ({ search, handleSearch }) => {
     const [searchQuery, setSearchQuery] = useState(search);
     const navigate = useNavigate();
-    const { user } = useUser();
+    const { user,setUser,csrfToken } = useUser();
 
     const handleSubmit = () => {
         handleSearch(searchQuery); 
     };
+    const handleProfile = async() => {
+        const response = await updateProfile(user, csrfToken);
+        setUser(response.user);
+        navigate('/profile');
+    }
 
     return (
         <div id="header" className="header">
@@ -43,7 +49,7 @@ const Header = ({ search, handleSearch }) => {
             )}
             {user && (
                 <div className="button-group">
-                    <button id="profileButton" className="btn" onClick={() => navigate('/profile')}>
+                    <button id="profileButton" className="btn" onClick={handleProfile}>
                         {user.username}
                     </button>
                 </div>

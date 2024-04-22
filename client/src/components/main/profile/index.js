@@ -29,6 +29,7 @@ const ProfilePage = () => {
       const fetchCsrf = async () => {
         await fetchCsrfToken();
       };
+      
       fetchCsrf();
       }, [fetchCsrfToken]);
     // Function to handle save changes

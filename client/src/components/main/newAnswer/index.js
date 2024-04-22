@@ -32,6 +32,7 @@ function NewAnswer() {
 
   const handleCreateAnswer = async () => {
     const newanswer = { qid: qid,
+      uid: user._id,
       ans: {
         text: answerText,
         ans_by: user.username,
