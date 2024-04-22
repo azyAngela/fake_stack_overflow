@@ -2,12 +2,13 @@ const express = require("express");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
 const router = express.Router();
+const Profile = require("../models/profiles");
 router.use(express.json());
 
 router.post("/addAnswer", async (req, res) => {
-    const { qid, ans } = req.body;
-    if (!qid || !ans) {
-        return res.status(400).json({ message: "Question ID and answer are required." });
+    const { qid, ans, uid } = req.body;
+    if (!qid || !ans , !uid) {
+        return res.status(400).json({ message: "Question ID and UID and answer are required." });
     }
     try {
         
@@ -24,6 +25,12 @@ router.post("/addAnswer", async (req, res) => {
             { $push: { answers: { $each: [savedAnswer._id], $position: 0 } } },
             { new: true }
           );
+        await Profile.findOneAndUpdate(
+            { _id: uid },
+            { $push: { answers: { $each: [savedAnswer._id], $position: 0 } } },
+            { new: true }
+          );
+            
 
         // Send back the saved answer
         res.status(200).json(savedAnswer);

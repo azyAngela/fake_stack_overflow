@@ -35,7 +35,7 @@ const PostList = ({search}) => {
         const response = await getQuestionList();
         setAllPosts(response.data); // Update allPosts state with fetched data
       } catch (error) {
-        console.error('Error fetching question:', error);
+        setError('Error fetching question:', error.message);
       }
     };
 
