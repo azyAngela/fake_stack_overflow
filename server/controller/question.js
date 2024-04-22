@@ -2,6 +2,7 @@ const express = require("express");
 const { addTag } = require('../utils/question');
 const Question = require("../models/questions");
 const router = express.Router();
+const Profile = require("../models/profiles");
 router.use(express.json());
 
 
@@ -62,6 +63,7 @@ router.put("/downvoteQuestion/:qid", async (req, res) => {
 router.post("/addQuestion", async (req, res) => {
     const body  = req.body;
     const todoTags = body.tags
+    const username = body.asked_by;
     const tagIds = []
     try {
         for (let tag of todoTags) {
@@ -70,6 +72,11 @@ router.post("/addQuestion", async (req, res) => {
         }
         body.tags = tagIds;
         const newQuestion = await Question.create(body);
+        await Profile.findOneAndUpdate(
+            { username: username },
+            { $push: { questions: { $each: [newQuestion._id], $position: 0 } } },
+            { new: true }
+          );
         res.status(200).json(newQuestion);
     } catch (error) {
         console.error("Failed to add question:", error);
