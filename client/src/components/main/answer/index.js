@@ -239,7 +239,6 @@ function PostDetail() {
           {loggedIn && (
             <Link to={`/newAnswer/${qid}`} className="btn btn-primary mb-3">Create an Answer</Link>
           )}
-
         </div>
       </div>
       {post.answers.map(answer => (

@@ -30,6 +30,7 @@ const PostContent = ({ post, handleVote, editingText, editedText, setEditedText,
             value={editedText}
             onChange={e => setEditedText(e.target.value)}
             className="form-control mb-2"
+            id='edit-textarea'
           />
         ) : (
           <p className="card-text">{post.text}</p>

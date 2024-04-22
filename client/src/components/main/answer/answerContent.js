@@ -38,6 +38,7 @@ const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswer
                 <div>
                   <textarea
                     value={editedAnswerText}
+                    id='edit-textareaAnswer'
                     onChange={e => setEditedAnswerText(e.target.value)}
                     className="form-control mb-2"
                   />
@@ -53,12 +54,12 @@ const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswer
                   <p className="card-text">{answer.text}</p>
                   <div className="mt-4 row">
                     <div className="col-md-6">
-                      <div>{`answered by ${answer.ans_by}`}</div>
+                      <div id='username'>{`answered by ${answer.ans_by}`}</div>
                       <div>{`answered ${getMetaData(new Date(answer.ans_date_time))}`}</div>
                     </div>
                     <div className="col-md-6 d-flex justify-content-end">
                       {isOwner && (
-                        <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEditClick(answer._id)}>Edit</button>
+                        <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEditClick(answer._id)}>Edit Answer</button>
                         )}
                       
                     </div>

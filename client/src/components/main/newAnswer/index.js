@@ -52,6 +52,7 @@ function NewAnswer() {
       <div className="mb-3">
         <textarea
           className="form-control"
+          id='answerText'
           rows="5"
           placeholder="Enter your comments here"
           value={answerText}
