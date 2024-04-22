@@ -9,6 +9,7 @@ const ProfileSchema = new mongoose.Schema({
         questions: [{type: mongoose.Schema.Types.ObjectId, ref: 'Question'}],
         reputation: {type : Number, required: true, default: 0},
         created_date_time: {type : Date, required: true},
+        isAdmin: {type : Boolean, required: true, default: false}
     },
     { collection: "Profile" }
 );
