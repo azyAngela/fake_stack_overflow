@@ -44,6 +44,26 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (!formData.title) {
+        setError('Question title is required');
+        return;
+      } else if (formData.title.length > 50) {
+        setError('Question title cannot be longer than 50 characters');
+        return;
+      }
+
+      if (!formData.text) {
+        setError('Question text is required');
+        return;
+      } else if (formData.text.length < 10) {
+        setError('Question text must be at least 10 characters long');
+        return;
+      }
+
+      if (!formData.tags) {
+        setError('Tags should not be empty');
+        return;
+      }
       // Generate current date/time
       const currentDate = new Date().toISOString();
 
@@ -84,7 +104,6 @@ const CreatePost = () => {
             value={formData.title}
             onChange={handleChange}
             maxLength={100}
-            required
           />
           <small className="form-text text-muted">Limit title to 100 characters or less</small>
         </div>
@@ -96,7 +115,6 @@ const CreatePost = () => {
             name="text"
             value={formData.text}
             onChange={handleChange}
-            required
           />
         </div>
         <div className="mb-3">
@@ -108,13 +126,12 @@ const CreatePost = () => {
             name="tags"
             value={formData.tags}
             onChange={handleChange}
-            required
           />
           <small className="form-text text-muted">Add keywords separated by whitespace</small>
         </div>
         <button type="submit" className="btn btn-primary">Submit</button>
       </form>
-      {error && <div className="mt-3 text-danger">{error}</div>}
+      {error && <div className="text-danger mt-3">{error}</div>}
     </div>
   );
 };

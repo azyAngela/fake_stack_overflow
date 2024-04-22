@@ -2,6 +2,7 @@ import React, { useState , useCallback, useEffect} from 'react';
 import { useUser } from '../../../utlis/userprovider';
 import { useNavigate } from 'react-router-dom';
 import { getCsrfToken, login } from '../services/profile.js';
+// import { encryptPassword, comparePassword } from '../services/encryption.js';
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -31,7 +32,16 @@ function Login() {
 
   const handleLogin = async () => {
     // Make sure to include the CSRF token in the headers
+    // console.log('username:', password);
+    // const encryptedPasswordPromise = encryptPassword(password);
+    // const encryptedPassword = await encryptedPasswordPromise;
+    // console.log('Encrypted password:', encryptedPassword);
     try {
+      // const isPasswordCorrect = await comparePassword(password, encryptedPassword);
+      // if (!isPasswordCorrect) {
+      //   setError('Incorrect password');
+      //   return;
+      // }
       const response = await login(username, password, csrfToken);
       setUser(response.user);
         setUsername('');
@@ -47,8 +57,6 @@ function Login() {
   };
 
   
-
-
   return (
     <div className="container mt-5">
        
