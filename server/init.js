@@ -36,12 +36,13 @@ function questionCreate(title, text, tags, answers, asked_by, ask_date_time, vie
     return qstn.save();
 }
 
-function profileCreate(username, email, password, answers, questions, reputation, created_date_time) {
+function profileCreate(username, email, password, answers, questions, reputation, created_date_time, isAdmin = false) {
     let profiledetail = {
         username: username,
         email: email,
         password: password,
         reputation: reputation,
+        isAdmin: isAdmin
     }
     if (answers != false) profiledetail.answers = answers;
     if (created_date_time != false) profiledetail.created_date_time = created_date_time;
@@ -76,6 +77,7 @@ const init = async () => {
     let q4 = await questionCreate('Quick question about storage on android', 'I would like to know the best way to go about storing an array on an android phone so that even when the app/activity ended the data remains', [t3, t4, t5], [a8], 'elephantCDE', new Date('2023-03-10T14:28:01'), 103);
     await profileCreate('lucy','lucy@gmail.com','123', [a1, a2, a3], [q1, q2, q3], 10, new Date('2023-03-10T14:28:01'));
     await profileCreate('lily','lily@gmail.com','123', [a4, a5], [q4], 20, new Date('2023-03-10T14:28:01'));
+    await profileCreate('ADMIN', 'ADMIN@gmail.com','ADMIN', [],[],0, new Date('2023-03-10T14:28:01'),true);
     if (db) db.close();
 
     console.log("done");
