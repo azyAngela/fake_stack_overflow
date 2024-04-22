@@ -23,7 +23,7 @@ const PostContent = ({ post, handleVote, editingText, editedText, setEditedText,
 
   return (
     <div className="card mb-3">
-      <div className="card-body">
+      <div className="card-body2">
         <h2 className="card-title">{post.title}</h2>
         {editingText ? (
           <textarea

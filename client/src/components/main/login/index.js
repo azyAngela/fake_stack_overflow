@@ -52,7 +52,7 @@ function Login() {
             jumpMain();
         }, 2000);
     } catch (error) {
-      setError('Error logging in:', error);
+      setError('Username or password is incorrect');
     }
   };
 

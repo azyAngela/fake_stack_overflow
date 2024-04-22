@@ -92,12 +92,14 @@ const ProfilePage = () => {
                             <input
                                 type="text"
                                 className="form-control mb-2"
+                                id='editUserName'
                                 value={editUserName}
                                 onChange={(e) => setEditUserName( e.target.value)}
                                 placeholder='Username'
                             />
                             <input
                                 className="form-control"
+                                id='editPassword'
                                 value={editPassword}
                                 onChange={(e) => setEditPassword(e.target.value)}
                                 placeholder="Password"
