@@ -2,21 +2,17 @@
 const Profile = require('../models/profiles');
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { MONGO_URL } = require('../config');
 let server;
 describe('Session management tests', () => {
   beforeEach(async () => {
     server = require('../server');
-      await mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-      console.log('Database connected');
-      await mongoose.connection.dropDatabase();
   })
 
   afterEach(async () => {
+     server.close();
     await mongoose.disconnect();
-    await server.close();
-
   });
+  
   it('POST /login must return a user if the user is valid, has a session, and a token', async () => {
     // Request CSRF token
     const respToken = await request(server)

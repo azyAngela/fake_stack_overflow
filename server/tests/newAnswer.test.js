@@ -2,7 +2,6 @@
 
 const supertest = require("supertest")
 const { default: mongoose } = require("mongoose");
-const { MONGO_URL } = require("../config");
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
 const Profile = require("../models/profiles");
@@ -15,15 +14,13 @@ describe("POST /addAnswer", () => {
 
   beforeEach(async () => {
     server = require('../server');
-    await mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-    console.log('Database connected');
-    await mongoose.connection.dropDatabase();
   })
 
-  afterEach(async() => {
+  afterEach(async () => {
+    server.close();
     await mongoose.disconnect();
-    await server.close();
   });
+  
 
   it("should add a new answer to the question", async () => {
     const mockAnswerId = new mongoose.Types.ObjectId();
