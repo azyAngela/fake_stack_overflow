@@ -6,9 +6,9 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const csurf = require('csurf');
 
-const { MONGO_URL, port, CLIENT_URL } = require("./config");
+const {  port, CLIENT_URL } = require("./config");
 
-mongoose.connect(MONGO_URL);
+//mongoose.connect(MONGO_URL);
 
 const app = express();
 
