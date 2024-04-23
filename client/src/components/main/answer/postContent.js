@@ -8,9 +8,13 @@ const PostContent = ({ post, handleVote, editingText, editedText, setEditedText,
   const [errorMessage, setErrorMessage] = useState('');
   const isAdmin = user && user.isAdmin == true;
 
-  const handleClick = (postId, voteType) => {
+  const handleClick = async (postId, voteType) => {
     if (user) {
-      handleVote(postId, voteType);
+      try {
+        await handleVote(postId, voteType);
+      } catch (error) {
+        setErrorMessage('Too many requests, please try again later.');
+      }
     } else {
       setErrorMessage('Please sign in to vote.');
     }

@@ -3,7 +3,14 @@ const Answer = require("../models/answers");
 const Question = require("../models/questions");
 const router = express.Router();
 const Profile = require("../models/profiles");
+const rateLimit = require("express-rate-limit");
 router.use(express.json());
+
+const limiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: "Too many requests from this IP, please try again later."
+  });
 
 router.post("/addAnswer", async (req, res) => {
     const { qid, ans, uid } = req.body;
@@ -78,7 +85,7 @@ router.delete("/deleteAnswer/:aid", async (req, res) => {
     }
 });
 
-router.put("/upvoteAnswer/:aid", async (req, res) => {
+router.put("/upvoteAnswer/:aid", limiter, async (req, res) => {
     const id = req.params.aid;
     try {
         const increment = req.body.increment || 0;
@@ -91,7 +98,7 @@ router.put("/upvoteAnswer/:aid", async (req, res) => {
     }
 });
 
-router.put("/downvoteAnswer/:aid", async (req, res) => {
+router.put("/downvoteAnswer/:aid", limiter, async (req, res) => {
     const id = req.params.aid;
     try {
         const increment = req.body.increment || 0;
@@ -104,5 +111,13 @@ router.put("/downvoteAnswer/:aid", async (req, res) => {
     }
 });
 // add appropriate HTTP verbs and their endpoints to the router.
+
+router.use((err, req, res, next) => {
+    if (err instanceof rateLimit.RateLimitExceeded) {
+      res.status(429).json({ message: "Too many requests, please try again later." });
+    } else {
+      next(err);
+    }
+  });
 
 module.exports = router;

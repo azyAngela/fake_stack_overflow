@@ -52,7 +52,7 @@ const PostList = ({search}) => {
   }, []);
 
   const handleVote = async (postId, voteType) => {
-    try {
+    // try {
       const prevCount = votedPosts[postId] || 0;
   
       let increment = 0;
@@ -97,10 +97,10 @@ const PostList = ({search}) => {
         ...prevVotedPosts,
         [postId]: prevCount + increment 
       }));
-    } catch (error) {
-      console.error('Failed to vote:', error);
-      setError('Failed to vote');
-    }
+    // } catch (error) {
+    //   console.error('Failed to vote:', error);
+    //   setError('Failed to vote');
+    // }
   };
   
   const filteredPosts = filterPosts(allPosts, search);
