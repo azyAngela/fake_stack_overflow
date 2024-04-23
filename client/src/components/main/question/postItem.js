@@ -4,9 +4,13 @@ import { useState } from 'react';
 
 const PostItem = ({ post, handleVote, loggedIn }) => {
   const [errorMessage, setErrorMessage] = useState('');
-  const handleClick = (postId, voteType) => {
+  const handleClick = async (postId, voteType) => {
     if (loggedIn) {
-      handleVote(postId, voteType);
+      try {
+        await handleVote(postId, voteType);
+      } catch (error) {
+        setErrorMessage('Too many requests, please try again later.');
+      }
     } else {
       setErrorMessage('Please sign in to vote.');
     }

@@ -10,13 +10,18 @@ const AnswerContent = ({ answer, handleAnswerVote, editingAnswerId, editedAnswer
   const [errorMessage, setErrorMessage] = useState('');
   const isAdmin = user && user.isAdmin == true;
 
-  const handleClick = (answerId, voteType) => {
+  const handleClick = async (answerId, voteType) => {
     if (loggedIn) {
-      handleAnswerVote(answerId, voteType);
+      try {
+        await handleAnswerVote(answerId, voteType);
+      } catch (error) {
+          setErrorMessage('Too many requests, please try again later.');
+      }
     } else {
       setErrorMessage('Please sign in to vote.');
     }
   };
+  
 
   const handleEditClick = (answerId) => {
     if (isOwner || isAdmin) {

@@ -3,6 +3,7 @@ const { addTag } = require('../utils/question');
 const Question = require("../models/questions");
 const router = express.Router();
 const Profile = require("../models/profiles");
+const rateLimit = require("express-rate-limit");
 router.use(express.json());
 const fs = require('fs');
 // const app = express();
@@ -14,6 +15,12 @@ router.use((req, res, next) => {
     logStream.write(logEntry + '\n');
     next();
 });
+
+const limiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: "Too many requests from this IP, please try again later."
+  });
 
 // add appropriate HTTP verbs and their endpoints to the router.
 
@@ -46,7 +53,7 @@ router.get("/getQuestionById/:qid", async (req, res) => {
     }
 });
 
-router.put("/upvoteQuestion/:qid", async (req, res) => {
+router.put("/upvoteQuestion/:qid", limiter, async (req, res) => {
     const id = req.params.qid;
     try {
         const increment = req.body.increment || 0;
@@ -60,7 +67,7 @@ router.put("/upvoteQuestion/:qid", async (req, res) => {
     }
 });
 
-router.put("/downvoteQuestion/:qid", async (req, res) => {
+router.put("/downvoteQuestion/:qid", limiter, async (req, res) => {
     const id = req.params.qid;
     try {
         const increment = req.body.increment || 0;

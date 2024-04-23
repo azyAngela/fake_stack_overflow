@@ -62,7 +62,7 @@ function PostDetail() {
   }, []);
 
   const handlePostVote = async (qid, voteType) => {
-    try {
+    // try {
       if (!loggedIn) {
         console.log("loggedIn", loggedIn);
         setError('Please sign in first'); // Set an error message if not logged in
@@ -99,15 +99,15 @@ function PostDetail() {
         ...prevVotedPosts,
         [qid]: prevCount + increment
       }));
-    } catch (error) {
-      console.error('Failed to vote:', error);
-      setError('Failed to vote');
-    }
+    // } catch (error) {
+    //   console.error('Failed to vote:', error);
+    //   setError('Failed to vote');
+    // }
   };
 
 
   const handleAnswerVote = async (aid, voteType) => {
-    try {
+    // try {
       if (!loggedIn) {
         console.log("loggedIn", loggedIn);
         setError('Please sign in first'); // Set an error message if not logged in
@@ -149,10 +149,10 @@ function PostDetail() {
         ...prevVotedAnswers,
         [aid]: prevCount + increment
       }));
-    } catch (error) {
-      console.error('Failed to vote:', error);
-      setError('Failed to vote');
-    }
+    // } catch (error) {
+      // console.error('Failed to vote:', error);
+      // setError('Failed to vote');
+    // }
   };
 
 
