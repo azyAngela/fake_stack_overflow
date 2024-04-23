@@ -56,7 +56,10 @@ router.put("/updateAnswer/:aid", async (req, res) => {
 router.delete("/deleteAnswer/:aid", async (req, res) => {
     const answerId  = req.params.aid;
     try {
-        await Answer.findByIdAndRemove(answerId);
+        const deletedAnswer = await Answer.findOneAndDelete({ _id: answerId });
+        if (!deletedAnswer) {
+            return res.status(404).json({ message: "Answer not found" });
+        }
 
         // Remove the reference from all questions
         await Question.updateMany(
@@ -68,7 +71,7 @@ router.delete("/deleteAnswer/:aid", async (req, res) => {
             { $pull: { answers: answerId } }
         );
 
-        res.status(200).json(deleted);
+        res.status(200).json(deletedAnswer);
     } catch (error) {
         console.error("Failed to delete answer:", error);
         res.status(500).json({ message: error.message});

@@ -98,3 +98,21 @@ export const downvoteQuestion = async (id,increment , csrfToken) => {
         throw error;
     }
 }
+
+export const deleteQuestion = async (id, csrfToken) => {    
+    try {
+        const response = await axios.delete(
+            `${clientUrl}/deleteQuestion/${id}`,
+            {
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                },
+                withCredentials: true
+            }
+        );
+        return response;
+    } catch (error) {
+        console.error('Failed to delete question:', error);
+        throw error;
+    }
+}

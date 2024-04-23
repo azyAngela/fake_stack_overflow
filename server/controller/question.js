@@ -87,14 +87,17 @@ router.post("/addQuestion", async (req, res) => {
 router.delete("/deleteQuestion/:qid", async (req, res) => {
     const qid  = req.params.qid;
     try {
-        await Question.findByIdAndRemove(qid);
+        const deletedQuestion = await Question.findOneAndDelete({ _id: qid });
+        if (!deletedQuestion) {
+            return res.status(404).json({ message: "Question not found" });
+        }
 
         await Profile.updateMany(
             { questions: qid },
             { $pull: { questions: qid } }
         );
 
-        res.status(200).json(deleted);
+        res.status(200).json(deletedQuestion);
     } catch (error) {
         console.error("Failed to delete question:", error);
         res.status(500).json({ message: "Failed to delete question due to server error." });

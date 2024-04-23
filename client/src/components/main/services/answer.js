@@ -78,3 +78,21 @@ export const downvoteAnswer = async (id,increment, csrfToken) => {
         throw error;
     }
 }
+
+export const deleteAnswer = async (id, csrfToken) => {
+    try {
+        const response = await axios.delete(
+            `${clientUrl}/deleteAnswer/${id}`,
+            {
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                },
+                withCredentials: true
+            }
+        );
+        return response;
+    } catch (error) {
+        console.error('Failed to delete answer:', error);
+        throw error;
+    }
+}
