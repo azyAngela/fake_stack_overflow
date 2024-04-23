@@ -45,9 +45,17 @@ describe('Fake Stack Overflow Tests', () => {
         cy.contains('This is a edited text content').should('exist');
     });
 
+    it('user can delete their own post', () => {
+        cy.login('lily', '123');
+        cy.createNewQuestion('Question title 1', 'Question text 1', 'cat dog');
+        cy.contains('Question title 1').click();
+        cy.get('button').contains('Delete').click();
+        cy.contains('Question title 1').should('not.exist');
+    });
+
     it('user cannot edit others posts, but can edit their own post', () => {
         cy.login('lily', '123');
         cy.contains('Programmatically navigate using React router').click();
         cy.get('button').contains('Edit').should('not.exist');
-      });
+    });
 });

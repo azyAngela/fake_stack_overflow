@@ -3,9 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import PostContent from './postContent';
 import AnswerContent from './answerContent';
 import { getCsrfToken } from '../services/profile';
-import { downvoteQuestion, fetchQuestion, updateQuestion, upvoteQuestion } from '../services/question';
-import { updateAnswer, upvoteAnswer, downvoteAnswer } from '../services/answer';
+import { downvoteQuestion, fetchQuestion, updateQuestion, upvoteQuestion, deleteQuestion } from '../services/question';
+import { updateAnswer, upvoteAnswer, downvoteAnswer, deleteAnswer } from '../services/answer';
 import checkLoginStatus from '../services/checkLoginStatus'; // Import the checkLoginStatus function
+import { useNavigate } from 'react-router-dom';
 
 
 function PostDetail() {
@@ -21,6 +22,7 @@ function PostDetail() {
   const [loggedIn, setLoggedIn] = useState(false); // State to track login status
 
   const qid = useParams().id;
+  const navigate = useNavigate();
 
   const fetchCsrfToken = useCallback(async () => {
     try {
@@ -214,6 +216,34 @@ function PostDetail() {
     setEditedText('');
   };
 
+  const handleDelete = async (postId) => {
+    try {
+      // console.log("postId", postId);
+      // console.log("post", post);
+      await deleteQuestion(postId, csrfToken);
+      navigate('/');
+  
+    } catch (error) {
+      console.error('Failed to delete question:', error);
+      setError('Failed to delete question. Please try again later.');
+    }
+  };
+
+  const handleDeleteAnswer = async (answerId) => {
+    try {
+      await deleteAnswer(answerId, csrfToken);
+      setPost(prevPost => ({
+        ...prevPost,
+        answers: prevPost.answers.filter(answer => answer._id !== answerId)
+      }));
+    } catch (error) {
+      console.error('Failed to delete answer:', error);
+      setError('Failed to delete answer. Please try again later.');
+    }
+  }
+  
+  
+
   if (!post) {
     return <div>Loading...</div>;
   }
@@ -230,6 +260,7 @@ function PostDetail() {
         handleEdit={handleEdit}
         cancelEditPost={cancelEditPost}
         loggedIn={loggedIn}
+        handleDelete={handleDelete}
       />
       <div className="row">
         <div className="col-md-6">
@@ -253,6 +284,7 @@ function PostDetail() {
           startEdit={startEdit}
           cancelEdit={cancelEdit}
           loggedIn={loggedIn}
+          handleDeleteAnswer={handleDeleteAnswer}
         />
       ))}
       {error && <div className="mt-3 text-danger">{error}</div>}

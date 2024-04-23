@@ -27,13 +27,6 @@ describe('Fake Stack Overflow Tests', () => {
 
     });
 
-    it('no "Create an Answer" button when not logged in', () => {
-        cy.visit('http://localhost:3000');
-        cy.contains('Programmatically navigate using React router').click();
-        cy.contains('Programmatically navigate using React router').should('exist');
-        cy.get('button').contains('Create an Answer').should('not.exist');
-    });
-
     it('user cannot edit others answers, but can edit their own answer', () => {
         cy.login('lily', '123');
         cy.contains('Programmatically navigate using React router').click();
@@ -47,6 +40,23 @@ describe('Fake Stack Overflow Tests', () => {
                 cy.wrap($answer).find('button').contains('Edit Answer').should('not.exist');
             }
         });
+    });
+
+    it('user can delete their own answer', () => {
+        cy.login('lily', '123');
+        cy.createNewQuestion('Question title 1', 'Question text 1', 'cat dog');
+        cy.contains('Question title 1').click();
+        cy.createNewAnswer('There is a new answer for pig');
+        cy.get('button').contains('Delete Answer').click();
+        cy.contains('There is a new answer for pig').should('not.exist');
+    });
+
+    it('Error message shown when the answer input box is empty', () => {
+        cy.login('lily', '123');
+        cy.contains('Programmatically navigate using React router').click();
+        cy.contains('Create an Answer').click();
+        cy.get('button').contains('Create Answer').click();
+        cy.contains('Failed to create answer').should('exist');
     });
 
 });

@@ -2,10 +2,11 @@ import { getMetaData } from '../../../utlis/dateFormat';
 import { useUser } from '../../../utlis/userprovider';
 import { useState } from 'react';
 
-const PostContent = ({ post, handleVote, editingText, editedText, setEditedText, handleSave, handleEdit, cancelEditPost }) => {
+const PostContent = ({ post, handleVote, editingText, editedText, setEditedText, handleSave, handleEdit, cancelEditPost, handleDelete }) => {
   const { user } = useUser(); // Accessing the user object from UserProvider
   const isOwner = user && post.asked_by === user.username;
   const [errorMessage, setErrorMessage] = useState('');
+  const isAdmin = user && user.isAdmin == true;
 
   const handleClick = (postId, voteType) => {
     if (user) {
@@ -16,7 +17,7 @@ const PostContent = ({ post, handleVote, editingText, editedText, setEditedText,
   };
 
   const handleEditClick = () => {
-    if (isOwner) {
+    if (isOwner || isAdmin) {
       handleEdit();
     }
   };
@@ -46,16 +47,24 @@ const PostContent = ({ post, handleVote, editingText, editedText, setEditedText,
         </div>
         <div className="mt-3">
 
-              <button className="btn btn-outline-primary btn-sm" onClick={() => handleClick(post._id, 'upvote')}>Upvote</button>
-              <span className="mx-2">{post.upvotes}</span>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => handleClick(post._id, 'downvote')}>Downvote</button>
+          <button className="btn btn-outline-primary btn-sm" onClick={() => handleClick(post._id, 'upvote')}>Upvote</button>
+          <span className="mx-2">{post.upvotes}</span>
+          <button className="btn btn-outline-danger btn-sm" onClick={() => handleClick(post._id, 'downvote')}>Downvote</button>
 
         </div>
-        {isOwner && (
-                  <button className="btn btn-outline-secondary btn-sm" onClick={editingText ? handleSave : handleEditClick}>
-                  {editingText ? 'Save' : 'Edit'}
-                </button>
-          )}
+        {(isOwner || isAdmin) && (
+          <>
+            <button className="btn btn-outline-secondary btn-sm" onClick={editingText ? handleSave : handleEditClick}>
+              {editingText ? 'Save' : 'Edit'}
+            </button>
+            <button className="btn btn-outline-danger btn-sm ms-2" onClick={
+
+              () => handleDelete(post._id)
+            }>
+              Delete
+            </button>
+          </>
+        )}
 
         {editingText && (
           <button className="btn btn-secondary btn-sm ms-2" onClick={cancelEditPost}>
