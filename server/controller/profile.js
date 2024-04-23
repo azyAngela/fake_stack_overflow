@@ -43,10 +43,7 @@ router.get('/check-login', (req, res) => {
 router.post('/updateProfile', async (req, res) => {
     const { username, password, email } = req.body;
 
-    // Sanitize inputs
-    const sanitizedEmail = sanitizeInput(email);
-
-    const user = await Profile.findOne({ email: sanitizedEmail });
+    const user = await Profile.findOne({ email: email });
     if (!user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -65,14 +62,12 @@ router.post("/signup", async (req, res) => {
         return res.status(400).json({ message: "Required Credential Missing!" });
     }
     try {
-        // Sanitize inputs
-        const sanitizedEmail = sanitizeInput(email);
 
-        if (await Profile.findOne({ email: sanitizedEmail })) {
+        if (await Profile.findOne({ email: email })) {
             return res.status(409).json({ message: 'Username already exists' });
         }
 
-        const newProfile = new Profile({ username: username, password: password, email: sanitizedEmail, created_date_time: new Date(), answers: [], questions: [], reputation: 0 });
+        const newProfile = new Profile({ username: username, password: password, email: email, created_date_time: new Date(), answers: [], questions: [], reputation: 0 });
         await newProfile.save();
 
         //req.session.user = newProfile;

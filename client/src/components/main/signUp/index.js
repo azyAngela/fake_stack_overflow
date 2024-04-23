@@ -64,6 +64,7 @@ const SignUp = () => {
         setFullName('');
         setEmail('');
         setMessage('User created successfully, redirecting to main page...');
+        console.log('response', response.data);
         setUser(response.data.user);
         setTimeout(() => {
             jumpMain();
