@@ -71,7 +71,7 @@ const CreatePost = () => {
         title: formData.title,
         text: formData.text,
         tags: formData.tags.split(" ").filter((tag) => tag.trim() !== ""),
-        asked_by: user.username,
+        asked_by: user? user.username:'',
         ask_date_time: currentDate
       };
 

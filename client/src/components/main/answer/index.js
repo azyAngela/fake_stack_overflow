@@ -98,7 +98,6 @@ function PostDetail() {
         [qid]: prevCount + increment
       }));
     } catch (error) {
-      console.error('Failed to vote:', error);
       setError('Failed to vote');
     }
   };

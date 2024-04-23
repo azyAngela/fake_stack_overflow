@@ -32,10 +32,10 @@ function NewAnswer() {
 
   const handleCreateAnswer = async () => {
     const newanswer = { qid: qid,
-      uid: user._id,
+      uid: user ? user._id : '',
       ans: {
         text: answerText,
-        ans_by: user.username,
+        ans_by: user? user.username : '',
       }}
     try {
       await addAnswer(newanswer, csrfToken);
