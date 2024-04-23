@@ -70,7 +70,7 @@ const SignUp = () => {
             jumpMain();
         }, 2000);
       } catch (error) {
-        setError('Error logging out:', error);
+        setError('Error signning up:', error);
       }
   };
 
