@@ -5,16 +5,14 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../config');
 let server;
 describe('Session management tests', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     server = require('../server');
       await mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
       console.log('Database connected');
       await mongoose.connection.dropDatabase();
-
-
   })
 
-  afterAll(async () => {
+  afterEach(async () => {
     await mongoose.disconnect();
     await server.close();
 
