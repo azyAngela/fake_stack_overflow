@@ -10,8 +10,7 @@ const fs = require('fs');
 const logStream = fs.createWriteStream('server.log', { flags: 'a' });
 // Middleware for logging requests
 router.use((req, res, next) => {
-    const user = req.user ? req.user.username : 'Unknown User';
-    const logEntry = `[${new Date().toISOString()}] ${req.method} ${req.url} - User: ${user}`;
+    const logEntry = `[${new Date().toISOString()}] ${req.method} ${req.url}`;
     logStream.write(logEntry + '\n');
     next();
 });
@@ -21,7 +20,6 @@ router.use((req, res, next) => {
 router.get("/getQuestion", async (req, res) => {
     try {
         const questions = await Question.find().populate("answers").populate("tags");
-        // const user = req.user ? req.user.username : 'Unknown User';
         const logEntry = `[${new Date().toISOString()}] Questions retrieved by ${req.ip}`;
         logStream.write(logEntry + '\n');
         res.status(200).json(questions);
