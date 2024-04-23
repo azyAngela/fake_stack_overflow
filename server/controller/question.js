@@ -4,28 +4,43 @@ const Question = require("../models/questions");
 const router = express.Router();
 const Profile = require("../models/profiles");
 router.use(express.json());
+const fs = require('fs');
+// const app = express();
 
+const logStream = fs.createWriteStream('server.log', { flags: 'a' });
+// Middleware for logging requests
+router.use((req, res, next) => {
+    const user = req.user ? req.user.username : 'Unknown User';
+    const logEntry = `[${new Date().toISOString()}] ${req.method} ${req.url} - User: ${user}`;
+    logStream.write(logEntry + '\n');
+    next();
+});
 
 // add appropriate HTTP verbs and their endpoints to the router.
 
 router.get("/getQuestion", async (req, res) => {
     try {
         const questions = await Question.find().populate("answers").populate("tags");
+        // const user = req.user ? req.user.username : 'Unknown User';
+        const logEntry = `[${new Date().toISOString()}] Questions retrieved by ${req.ip}`;
+        logStream.write(logEntry + '\n');
         res.status(200).json(questions);
     } catch (error) {
         console.error("Failed to get questions:", error);
         res.status(500).json({ message: "Failed to get questions due to server error." });
     }
-})  
+})
 
 router.get("/getQuestionById/:qid", async (req, res) => {
-    const id  = req.params.qid;
+    const id = req.params.qid;
     try {
         const updated = await Question.findOneAndUpdate(
             { _id: id },
             { $inc: { views: 1 } },
             { new: true }
-          ).populate("answers");
+        ).populate("answers");
+        const logEntry = `[${new Date().toISOString()}] Questions viewed by ${req.ip}`;
+        logStream.write(logEntry + '\n');
         res.status(200).json(updated);
     } catch (error) {
         console.error("Failed to get question:", error);
@@ -38,7 +53,8 @@ router.put("/upvoteQuestion/:qid", async (req, res) => {
     try {
         const increment = req.body.increment || 0;
         const updatedQuestion = await Question.findByIdAndUpdate(id, { $inc: { upvotes: increment } }, { new: true });
-
+        const logEntry = `[${new Date().toISOString()}] Questions upvoted by ${req.ip}`;
+        logStream.write(logEntry + '\n');
         res.status(200).json(updatedQuestion);
     } catch (error) {
         console.error("Failed to upvote question:", error);
@@ -52,6 +68,8 @@ router.put("/downvoteQuestion/:qid", async (req, res) => {
         const increment = req.body.increment || 0;
         const updatedQuestion = await Question.findByIdAndUpdate(id, { $inc: { upvotes: increment } }, { new: true });
 
+        const logEntry = `[${new Date().toISOString()}] Questions downvoted by ${req.ip}`;
+        logStream.write(logEntry + '\n');
         res.status(200).json(updatedQuestion);
     } catch (error) {
         console.error("Failed to downvote question:", error);
@@ -61,7 +79,7 @@ router.put("/downvoteQuestion/:qid", async (req, res) => {
 
 
 router.post("/addQuestion", async (req, res) => {
-    const body  = req.body;
+    const body = req.body;
     const todoTags = body.tags
     const username = body.asked_by;
     const tagIds = []
@@ -76,7 +94,9 @@ router.post("/addQuestion", async (req, res) => {
             { username: username },
             { $push: { questions: { $each: [newQuestion._id], $position: 0 } } },
             { new: true }
-          );
+        );
+        const logEntry = `[${new Date().toISOString()}] Questions added by ${req.ip}`;
+        logStream.write(logEntry + '\n');
         res.status(200).json(newQuestion);
     } catch (error) {
         console.error("Failed to add question:", error);
@@ -85,7 +105,7 @@ router.post("/addQuestion", async (req, res) => {
 });
 
 router.delete("/deleteQuestion/:qid", async (req, res) => {
-    const qid  = req.params.qid;
+    const qid = req.params.qid;
     try {
         const deletedQuestion = await Question.findOneAndDelete({ _id: qid });
         if (!deletedQuestion) {
@@ -97,6 +117,8 @@ router.delete("/deleteQuestion/:qid", async (req, res) => {
             { $pull: { questions: qid } }
         );
 
+        const logEntry = `[${new Date().toISOString()}] Questions deleted by ${req.ip}`;
+        logStream.write(logEntry + '\n');
         res.status(200).json(deletedQuestion);
     } catch (error) {
         console.error("Failed to delete question:", error);
@@ -105,10 +127,12 @@ router.delete("/deleteQuestion/:qid", async (req, res) => {
 });
 
 router.put("/updateQuestion/:qid", async (req, res) => {
-    const id  = req.params.qid;
+    const id = req.params.qid;
     const body = req.body;
     try {
-        const updated = await Question.findOneAndUpdate( { _id: id }, body, { new: true });
+        const updated = await Question.findOneAndUpdate({ _id: id }, body, { new: true });
+        const logEntry = `[${new Date().toISOString()}] Questions updated by ${req.ip}`;
+        logStream.write(logEntry + '\n');
         res.status(200).json(updated);
     } catch (error) {
         console.error("Failed to update question:", error);
