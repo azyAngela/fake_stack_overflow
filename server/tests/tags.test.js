@@ -5,7 +5,7 @@ const supertest = require("supertest")
 const Tag = require('../models/tags');
 const Question = require('../models/questions');
 const { default: mongoose } = require("mongoose");
-
+const { MONGO_URL } = require('../config');
 // Mock data for tags
 const mockTags = [
   { name: 'tag1' },
@@ -21,13 +21,18 @@ const mockQuestions = [
 let server;
 describe('GET /getTagsWithQuestionNumber', () => {
 
-    beforeEach(() => {
-        server = require("../server");
-    })
-    afterEach(async() => {
-        server.close();
-        await mongoose.disconnect()
-    });
+    beforeEach(async () => {
+        server = require('../server');
+        await mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+        console.log('Database connected');
+        await mongoose.connection.dropDatabase();
+      })
+    
+      afterEach(async() => {
+        await mongoose.disconnect();
+        await server.close();
+      });
+    
 
     it('should return tags with question numbers', async () => {
         // Mocking Tag.find() and Question.find()

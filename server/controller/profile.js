@@ -12,14 +12,18 @@ router.post('/login', async (req, res) => {
     const { username, password } = req.body;
   
     // Mock authentication
-    const user = await Profile.findOne({ username: username, password: password })
-    .populate('questions')
-    .populate('answers')
-    if (user) {
-      req.session.user = user.toObject();
-      res.status(200).json({ isloggedin: true, user });
-    } else {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    try{
+      const userQuery = Profile.findOne({ username: username, password: password });
+      const user = await userQuery.populate('questions').populate('answers');
+
+      if (user) {
+        req.session.user = user.toObject();
+        res.status(200).json({ isloggedin: true, user });
+      } else {
+        res.status(401).json({ success: false, message: 'Invalid credentials' });
+      }
+    }catch(error){
+        res.status(500).json({ message: error.message });
     }
   });
 
@@ -70,7 +74,6 @@ router.post("/signup", async (req, res) => {
         // Send back the saved answer
         res.status(200).json({ message: 'User created successfully', user: newProfile });
     } catch (error) {
-        console.error("Failed to add Profile:", error);
         res.status(500).json({ message: error.message});
     }
 
