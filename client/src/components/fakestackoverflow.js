@@ -1,19 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "./header";
 import Main from "./main";
-import {useState} from "react";
 
-export default function fakeStackOverflow() {
+export default function FakeStackOverflow() {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState("home");
-    const setMainPage = (search = "", page= "home") => {
-        setSearch(search);
-        setPage(page);
+
+    const handleSearch = (query) => {
+        setSearch(query);
+        setPage("search"); // Update page to indicate search results
     };
+
     return (
         <>
-            <Header search = {search} setMainPage = {setMainPage}/>
-            <Main search={search} passpage = {page}/>
+            <Header search={search} handleSearch={handleSearch} />
+            <Main search={search} passpage={page} />
         </>
     );
 }

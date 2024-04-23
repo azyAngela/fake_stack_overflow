@@ -9,7 +9,7 @@ const questionSchema = new mongoose.Schema(
         ask_date_time: {type : Date, required: true},
         views: {type : Number, required: true, default: 0},
         answers: [{type: mongoose.Schema.Types.ObjectId, ref: 'Answer'}],
-        tags:[{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}],
+        tags:[{type:String}],
         upvotes: {type : Number, required: true, default: 0},
     },
     { collection: "Question" }
