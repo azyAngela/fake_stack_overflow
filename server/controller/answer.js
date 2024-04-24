@@ -11,10 +11,12 @@ const limiter = rateLimit({
     max: 10, // limit each IP to 10 requests per windowMs
     message: "Too many requests from this IP, please try again later."
   });
-
-router.post("/addAnswer", async (req, res) => {
+function isValidObjectId(id) {
+    return mongoose.Types.ObjectId.isValid(id);
+}
+router.post("/addAnswer", limiter, async (req, res) => {
     const { qid, ans, uid } = req.body;
-    if (!qid || !ans , !uid) {
+    if (!isValidObjectId(qid) || !isValidObjectId(ans) , !isValidObjectId(uid)) {
         return res.status(400).json({ message: "Question ID and UID and answer are required." });
     }
     try {
@@ -48,7 +50,7 @@ router.post("/addAnswer", async (req, res) => {
 
 });
 
-router.put("/updateAnswer/:aid", async (req, res) => {
+router.put("/updateAnswer/:aid", limiter, async (req, res) => {
     const id  = req.params.aid;
     const body = req.body;
     try {
@@ -60,7 +62,7 @@ router.put("/updateAnswer/:aid", async (req, res) => {
         }
     });
     
-router.delete("/deleteAnswer/:aid", async (req, res) => {
+router.delete("/deleteAnswer/:aid", limiter, async (req, res) => {
     const answerId  = req.params.aid;
     try {
         const deletedAnswer = await Answer.findOneAndDelete({ _id: answerId });

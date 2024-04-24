@@ -19,6 +19,7 @@ All the features you have implemented.
 | Post moderation | The posts and answers should be monitered through authentication of user log in, there should have limited access to edit or delete posts and answers based on user roles, admin has more rights.  | client/cypress/e2e/postModeration.cy.js | client/cypress/component/indexPostDetail.cy.js,  client/cypress/component/postItemPostItem.cy.js  | server/tests/question.test.js   |
 
 ## Instructions to generate and view coverage report 
+We decided to run code coverage report to cypress e2e test.
 Instructions: 
 1. navigate to client by running:
     cd client/
@@ -26,7 +27,6 @@ Instructions:
     npx nyc cypress run --browser chrome
 3. run the code:
     npx nyc report --reporter=text-summary
-
 
 =============================== Coverage summary ===============================
 Statements   : 87.63% ( 567/647 )
@@ -76,4 +76,9 @@ All files                               |   87.63 |     82.8 |   97.43 |   87.51
   helper.js                             |   96.42 |    95.23 |     100 |   96.15 | 46                                                                  
   userprovider.js                       |     100 |       75 |     100 |     100 | 16                                                                  
 ----------------------------------------|---------|----------|---------|---------|---------------------------------------------------------------------
+
 ## Extra Credit Section (if applicable)
+We ran the codeql to get vulnerability reports. We get the report that we have serveral places that may have vulnerability of sql-injection, e.g controller/answer.js.
+We have added validator to make sure sql-injection will not happen. In addition, many of endpoints who are interacting with the database need setting rate-limit.
+We have also fix that e.g controller/question.js and controller answer.js. We have defintly fix more than 4 vulnerabilities.
+
