@@ -64,7 +64,6 @@ function PostDetail() {
   const handlePostVote = async (qid, voteType) => {
     // try {
       if (!loggedIn) {
-        console.log("loggedIn", loggedIn);
         setError('Please sign in first'); // Set an error message if not logged in
         return;
       }
@@ -109,7 +108,6 @@ function PostDetail() {
   const handleAnswerVote = async (aid, voteType) => {
     // try {
       if (!loggedIn) {
-        console.log("loggedIn", loggedIn);
         setError('Please sign in first'); // Set an error message if not logged in
         return;
       }
@@ -218,8 +216,6 @@ function PostDetail() {
 
   const handleDelete = async (postId) => {
     try {
-      // console.log("postId", postId);
-      // console.log("post", post);
       await deleteQuestion(postId, csrfToken);
       navigate('/');
   

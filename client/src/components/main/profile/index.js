@@ -39,12 +39,6 @@ const ProfilePage = () => {
             setError('Please fill in all fields');
             return;
         }
-
-        // Encrypt the password before sending it to the backend
-        // const encryptedPasswordPromise = encryptPassword(editPassword);
-        // const encryptedPassword = await encryptedPasswordPromise;
-        // console.log('Encrypted password:', encryptedPassword);
-
         // Make a PUT request to the backend endpoint
         try {
             let newuser= {username: editUserName, email: user.email, password: editPassword}
@@ -60,13 +54,6 @@ const ProfilePage = () => {
           }
        
     };
-
-    // Username and email addresses are displayed with appropriate masking or redaction to prevent full disclosure of sensitive information.
-    // const maskEmail = (email) => {
-    //     const [username, domain] = email.split('@');
-    //     const maskedUsername = username.substring(0, Math.min(username.length, 3)) + '...';
-    //     return maskedUsername + '@' + domain;
-    // };
 
     const handleLogout = async () => {
         try {

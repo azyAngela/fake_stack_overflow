@@ -59,7 +59,6 @@ const PostList = ({search}) => {
 
       // Check if the user is logged in before allowing voting
       if (!loggedIn) {
-        console.log("loggedIn", loggedIn);
         setError('Please sign in first'); // Set an error message if not logged in
         return;
       }

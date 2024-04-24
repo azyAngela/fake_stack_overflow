@@ -1,11 +1,11 @@
 describe('Fake Stack Overflow Tests', () => {
     beforeEach(() => {
         cy.visit('http://localhost:3000');
-        cy.exec("node ../server/init.js mongodb://127.0.0.1:27017/fake_so");
+        cy.exec("node ../server/populate.js mongodb://localhost:27017/fake_so");
     });
 
     afterEach(() => {
-        cy.exec("node ../server/destroy.js mongodb://127.0.0.1:27017/fake_so");
+        cy.exec("node ../server/destroy.js mongodb://localhost:27017/fake_so");
     });
 
     it('the tags should be added when creating a question', () => {
