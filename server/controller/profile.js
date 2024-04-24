@@ -71,7 +71,9 @@ router.post("/signup", async (req, res) => {
         await newProfile.save();
 
         //req.session.user = newProfile;
-
+        if(newProfile){
+          req.session.user = newProfile.toObject();
+        }
         // Send back the saved answer
         res.status(200).json({ message: 'User created successfully', user: newProfile });
     } catch (error) {
