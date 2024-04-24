@@ -4,11 +4,11 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 let server;
 describe('Session management tests', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     server = require('../server');
   })
 
-  afterEach(async () => {
+  afterAll(async () => {
      server.close();
     await mongoose.disconnect();
   });

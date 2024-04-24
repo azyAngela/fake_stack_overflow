@@ -12,11 +12,11 @@ jest.mock("../models/answers");
 let server;
 describe("POST /addAnswer", () => {
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     server = require('../server');
   })
 
-  afterEach(async () => {
+  afterAll(async () => {
     server.close();
     await mongoose.disconnect();
   });
