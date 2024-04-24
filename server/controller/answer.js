@@ -4,6 +4,7 @@ const Question = require("../models/questions");
 const router = express.Router();
 const Profile = require("../models/profiles");
 const rateLimit = require("express-rate-limit");
+const mongoose = require("mongoose");
 router.use(express.json());
 
 const limiter = rateLimit({
