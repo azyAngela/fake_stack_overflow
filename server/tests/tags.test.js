@@ -20,11 +20,11 @@ const mockQuestions = [
 let server;
 describe('GET /getTagsWithQuestionNumber', () => {
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         server = require('../server');
       })
     
-      afterEach(async () => {
+      afterAll(async () => {
         server.close();
         await mongoose.disconnect();
       });
