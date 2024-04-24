@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 async function dropDatabase() {
   try {
     // Connect to MongoDB
-    await mongoose.connect('mongodb://mongodb:27017/fake_so', { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect('mongodb://localhost:27017/fake_so', { useNewUrlParser: true, useUnifiedTopology: true });
 
     console.log("Connected to MongoDB");
 
