@@ -21,3 +21,4 @@ All the features you have implemented.
 ## Instructions to generate and view coverage report 
 
 ## Extra Credit Section (if applicable)
+We ran the codeql to get vulnerability reports. We get the report that we have serveral places that may have vulnerability of sql-injection, e.g controller/answer.js. We have added validator to make sure sql-injection will not happen. In addition, many of endpoints who are interacting with the database need setting rate-limit. We have also fix that e.g controller/question.js and controller answer.js. We have defintly fix more than 4 vulnerabilities.

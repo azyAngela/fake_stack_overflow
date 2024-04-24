@@ -24,7 +24,7 @@ const limiter = rateLimit({
 
 // add appropriate HTTP verbs and their endpoints to the router.
 
-router.get("/getQuestion", async (req, res) => {
+router.get("/getQuestion", limiter, async (req, res) => {
     try {
         const questions = await Question.find().populate("answers").populate("tags");
         const logEntry = `[${new Date().toISOString()}] Questions retrieved by ${req.ip}`;
