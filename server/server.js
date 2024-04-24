@@ -7,14 +7,14 @@ const bodyParser = require('body-parser');
 const csurf = require('csurf');
 
 const { MONGO_URL, port, CLIENT_URL } = require("./config");
-
+const secret = 'your-secret-key';
 mongoose.connect(MONGO_URL);
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(session({
-  secret: 'your-secret-key',
+  secret: secret,
   resave: false,
   saveUninitialized: true
 }));

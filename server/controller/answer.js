@@ -3,11 +3,20 @@ const Answer = require("../models/answers");
 const Question = require("../models/questions");
 const router = express.Router();
 const Profile = require("../models/profiles");
+const rateLimit = require("express-rate-limit");
 router.use(express.json());
 
-router.post("/addAnswer", async (req, res) => {
+const limiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: "Too many requests from this IP, please try again later."
+  });
+function isValidObjectId(id) {
+    return mongoose.Types.ObjectId.isValid(id);
+}
+router.post("/addAnswer", limiter, async (req, res) => {
     const { qid, ans, uid } = req.body;
-    if (!qid || !ans , !uid) {
+    if (!isValidObjectId(qid) || !isValidObjectId(ans) , !isValidObjectId(uid)) {
         return res.status(400).json({ message: "Question ID and UID and answer are required." });
     }
     try {
@@ -41,7 +50,7 @@ router.post("/addAnswer", async (req, res) => {
 
 });
 
-router.put("/updateAnswer/:aid", async (req, res) => {
+router.put("/updateAnswer/:aid", limiter, async (req, res) => {
     const id  = req.params.aid;
     const body = req.body;
     try {
@@ -53,10 +62,13 @@ router.put("/updateAnswer/:aid", async (req, res) => {
         }
     });
     
-router.delete("/deleteAnswer/:aid", async (req, res) => {
+router.delete("/deleteAnswer/:aid", limiter, async (req, res) => {
     const answerId  = req.params.aid;
     try {
-        await Answer.findByIdAndRemove(answerId);
+        const deletedAnswer = await Answer.findOneAndDelete({ _id: answerId });
+        if (!deletedAnswer) {
+            return res.status(404).json({ message: "Answer not found" });
+        }
 
         // Remove the reference from all questions
         await Question.updateMany(
@@ -68,14 +80,14 @@ router.delete("/deleteAnswer/:aid", async (req, res) => {
             { $pull: { answers: answerId } }
         );
 
-        res.status(200).json(deleted);
+        res.status(200).json(deletedAnswer);
     } catch (error) {
         console.error("Failed to delete answer:", error);
         res.status(500).json({ message: error.message});
     }
 });
 
-router.put("/upvoteAnswer/:aid", async (req, res) => {
+router.put("/upvoteAnswer/:aid", limiter, async (req, res) => {
     const id = req.params.aid;
     try {
         const increment = req.body.increment || 0;
@@ -88,7 +100,7 @@ router.put("/upvoteAnswer/:aid", async (req, res) => {
     }
 });
 
-router.put("/downvoteAnswer/:aid", async (req, res) => {
+router.put("/downvoteAnswer/:aid", limiter, async (req, res) => {
     const id = req.params.aid;
     try {
         const increment = req.body.increment || 0;
@@ -101,5 +113,13 @@ router.put("/downvoteAnswer/:aid", async (req, res) => {
     }
 });
 // add appropriate HTTP verbs and their endpoints to the router.
+
+router.use((err, req, res, next) => {
+    if (err instanceof rateLimit.RateLimitExceeded) {
+      res.status(429).json({ message: "Too many requests, please try again later." });
+    } else {
+      next(err);
+    }
+  });
 
 module.exports = router;

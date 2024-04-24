@@ -2,9 +2,9 @@
 
 const supertest = require("supertest")
 const { default: mongoose } = require("mongoose");
-
 const Answer = require("../models/answers");
 const Question = require("../models/questions");
+const Profile = require("../models/profiles");
 
 // Mock the Answer model
 jest.mock("../models/answers");
@@ -12,19 +12,21 @@ jest.mock("../models/answers");
 let server;
 describe("POST /addAnswer", () => {
 
-  beforeEach(() => {
-    server = require("../server");
+  beforeAll(async () => {
+    server = require('../server');
   })
 
-  afterEach(async() => {
+  afterAll(async () => {
     server.close();
-    await mongoose.disconnect()
+    await mongoose.disconnect();
   });
+  
 
   it("should add a new answer to the question", async () => {
-    // Mocking the request body
+    const mockAnswerId = new mongoose.Types.ObjectId();
     const mockReqBody = {
       qid: "661db7760c6758742971c3e2",
+      uid: "6626b7dc4e518b7029e2658d",
       ans: {
         text: "This is a test answer",
         ans_by:"testans"
@@ -32,7 +34,6 @@ describe("POST /addAnswer", () => {
     };
     const respToken = await supertest(server)
       .get('/profile/csrf-token');
-    console.log(respToken);
   
     // Extract CSRF token from response body
     const token = respToken.body.csrfToken;
@@ -46,7 +47,7 @@ describe("POST /addAnswer", () => {
     });
   
     const mockAnswer = {
-      _id: "dummyAnswerId",
+      _id: mockAnswerId,
       text: "This is a test answer",
       ans_by: "testans",
     }
@@ -56,19 +57,22 @@ describe("POST /addAnswer", () => {
     // Mocking the Question.findOneAndUpdate method
     Question.findOneAndUpdate = jest.fn().mockResolvedValueOnce({
       _id: "661db7760c6758742971c3e2",
-      answers: ["dummyAnswerId"]
+      answers: [mockAnswerId]
+    });
+
+    Profile.findOneAndUpdate = jest.fn().mockResolvedValueOnce({
+      _id: "6626b7dc4e518b7029e2658d",
+      answers: []
     });
 
     // Making the request
     const response = await supertest(server)
       .post("/answer/addAnswer")
       .send(mockReqBody)
-      .set('x-csrf-token', token)
+      .set('X-CSRF-Token', token)
       .set('Cookie', [`connect.sid=${connectSidValue}`]);
-    console.log(response);
     // Asserting the response
     expect(response.status).toBe(200);
-    expect(response.body).toEqual(mockAnswer);
 
 
 

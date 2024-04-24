@@ -5,6 +5,7 @@
     "bootstrap": "^5.3.3"
   },
   "devDependencies": {
+    "@cypress/code-coverage": "^3.12.36",
     "@cypress/react": "^8.0.0"
   }
 }

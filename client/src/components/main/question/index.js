@@ -52,14 +52,13 @@ const PostList = ({search}) => {
   }, []);
 
   const handleVote = async (postId, voteType) => {
-    try {
+    // try {
       const prevCount = votedPosts[postId] || 0;
   
       let increment = 0;
 
       // Check if the user is logged in before allowing voting
       if (!loggedIn) {
-        console.log("loggedIn", loggedIn);
         setError('Please sign in first'); // Set an error message if not logged in
         return;
       }
@@ -97,10 +96,10 @@ const PostList = ({search}) => {
         ...prevVotedPosts,
         [postId]: prevCount + increment 
       }));
-    } catch (error) {
-      console.error('Failed to vote:', error);
-      setError('Failed to vote');
-    }
+    // } catch (error) {
+    //   console.error('Failed to vote:', error);
+    //   setError('Failed to vote');
+    // }
   };
   
   const filteredPosts = filterPosts(allPosts, search);

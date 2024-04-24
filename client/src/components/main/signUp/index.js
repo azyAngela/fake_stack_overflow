@@ -86,19 +86,19 @@ const SignUp = () => {
             value={fullName}
             onChange={handleFullNameChange}
             style={{ maxWidth: '300px' }}
-            required
+            
           />
         </div>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Email:</label>
           <input
-            type="email"
+            type="text"
             className="form-control"
             id="email"
             value={email}
             onChange={handleEmailChange}
             style={{ maxWidth: '300px' }}
-            required
+           
           />
         </div>
         <div className="mb-3">
@@ -110,7 +110,7 @@ const SignUp = () => {
             value={password}
             onChange={handlePasswordChange}
             style={{ maxWidth: '300px' }}
-            required
+           
           />
         </div>
         <div className="mb-3">
@@ -122,7 +122,7 @@ const SignUp = () => {
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
             style={{ maxWidth: '300px' }}
-            required
+            
           />
         </div>
         <button type="submit" className="btn btn-primary">Register</button>

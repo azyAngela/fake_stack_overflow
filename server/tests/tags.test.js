@@ -5,7 +5,6 @@ const supertest = require("supertest")
 const Tag = require('../models/tags');
 const Question = require('../models/questions');
 const { default: mongoose } = require("mongoose");
-
 // Mock data for tags
 const mockTags = [
   { name: 'tag1' },
@@ -21,13 +20,15 @@ const mockQuestions = [
 let server;
 describe('GET /getTagsWithQuestionNumber', () => {
 
-    beforeEach(() => {
-        server = require("../server");
-    })
-    afterEach(async() => {
+    beforeAll(async () => {
+        server = require('../server');
+      })
+    
+      afterAll(async () => {
         server.close();
-        await mongoose.disconnect()
-    });
+        await mongoose.disconnect();
+      });
+      
 
     it('should return tags with question numbers', async () => {
         // Mocking Tag.find() and Question.find()
